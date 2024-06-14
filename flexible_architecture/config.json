@@ -1,0 +1,98 @@
+{
+    "ASU": {
+        "type": "ASU",
+        "input_stream": {
+            "fluid_name": "Air",
+            "flow_rate": 100,
+            "temperature": 300,
+            "pressure": 101325,
+            "mass_flow": 120,
+            "enthalpy": 300000,
+            "internal_energy": 298000,
+            "entropy": 2900,
+            "density": 1.2,
+            "gamma": 1.4,
+            "phase": 0
+        },
+        "output_streams": [
+            {"fluid_name": "Nitrogen", "temperature": 77, "split_ratio": 0.79, "next_subsystem": "SyngasCompression", "origin": true},
+            {"fluid_name": "Oxygen", "temperature": 90, "split_ratio": 0.21, "next_subsystem": null, "origin": true}
+        ],
+        "efficiency": 0.8,
+        "electricity_conversion": 3.6,
+        "energy_consumption": "input_streams_0['flow_rate'] * 2.44 * abs(output_streams_0['temperature'] - input_streams_0['temperature'])*inputs['efficiency']*inputs['electricity_conversion']"
+    },
+    "HydrogenProduction": {
+        "type": "HydrogenProduction",
+        "input_stream": {
+            "fluid_name": "Water",
+            "flow_rate": 50,
+            "temperature": 298,
+            "pressure": 101325,
+            "mass_flow": 50,
+            "enthalpy": 420000,
+            "internal_energy": 400000,
+            "entropy": 1500,
+            "density": 1.0,
+            "gamma": 1.3,
+            "phase": 1
+        },
+        "output_streams": [
+            {"fluid_name": "Hydrogen","temperature": 300, "split_ratio": 0.11, "next_subsystem": "SyngasCompression", "origin": true},
+            {"fluid_name": "Oxygen","temperature": 300, "split_ratio": 0.89, "next_subsystem": null, "origin": true}
+        ],
+        "efficiency": 0.8,
+        "electricity_conversion": 4.2,
+        "energy_consumption": "input_streams_0['flow_rate'] * 4.18 * abs(output_streams_0['temperature'] - input_streams_0['temperature'])*inputs['efficiency']*inputs['electricity_conversion']"
+    },
+    "SyngasCompression": {
+        "type": "SyngasCompression",
+        "input_streams": [
+            {"from_subsystem": "ASU", "fluid_name": "Nitrogen"},
+            {"from_subsystem": "HydrogenProduction", "fluid_name": "Hydrogen"}
+        ],
+        "output_streams": [
+            {"fluid_name": "Nitrogen","temperature": 350, "pressure": 500000, "mix_ratio": 0.5, "next_subsystem": "HaberBoschUnit"},
+            {"fluid_name": "Hydrogen", "temperature": 350, "pressure": 500000, "mix_ratio": 0.5, "next_subsystem": "HaberBoschUnit"}
+        ],
+        "efficiency": 0.8,
+        "electricity_conversion": 3.2,
+        "energy_consumption": "(input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * 1.2 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']"
+    },
+    "HaberBoschUnit": {
+        "type": "HaberBoschUnit",
+        "input_streams": [
+            {"from_subsystem": "SyngasCompression", "fluid_name": "Nitrogen"},
+            {"from_subsystem": "SyngasCompression", "fluid_name": "Hydrogen"},
+            {"from_subsystem": "CoolingSubsystem","fluid_name": "Nitrogen", "iteration": 2},
+            {"from_subsystem": "CoolingSubsystem","fluid_name": "Hydrogen","iteration": 2} 
+        ],
+        "output_streams": [
+            {"fluid_name": "Ammonia", "pressure": 15000000, "split_ratio": 0.15, "next_subsystem": "CoolingSubsystem", "origin": true},
+            {"fluid_name": "Nitrogen", "pressure": 15000000, "split_ratio": 0.85, "next_subsystem": "CoolingSubsystem"},
+            {"fluid_name": "Hydrogen", "pressure": 15000000, "split_ratio": 0.85, "next_subsystem": "CoolingSubsystem"} 
+        ],
+        "efficiency": 0.8,
+        "electricity_conversion": 3.8,
+        "first_energy_consumption": "(input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * 3.5 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']",
+        "energy_consumption": "(((input_streams_0['flow_rate'] * input_streams_1['flow_rate'])-(input_streams_2['flow_rate']* input_streams_3['flow_rate'])) * 3.5 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']"
+    },
+    "CoolingSubsystem": {
+        "type": "CoolingSubsystem",
+        "input_streams": [
+            {"from_subsystem": "HaberBoschUnit", "fluid_name": "Ammonia"},
+            {"from_subsystem": "HaberBoschUnit", "fluid_name": "Nitrogen"},
+            {"from_subsystem": "HaberBoschUnit", "fluid_name": "Hydrogen"}
+        ],
+        "output_streams": [
+            {"fluid_name": "Ammonia", "temperature": 238, "pressure": 1500000,  "next_subsystem": null},
+            {"fluid_name": "Nitrogen", "pressure": 500000, "recycled_fraction": 0.77,  "next_subsystem": "HaberBoschUnit"},
+            {"fluid_name": "Hydrogen", "pressure": 500000, "recycled_fraction": 0.77,  "next_subsystem": "HaberBoschUnit"}
+        ],
+        "efficiency": 0.6,
+        "electricity_conversion": 2.8,
+        "energy_consumption": "(input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * input_streams_2['flow_rate'] * 1.5 * abs(output_streams_0['temperature'] - input_streams_0['temperature']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']"
+    },
+    "electricity_emission_factor": 0.5,
+    "iterations": 5 
+}
