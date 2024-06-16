@@ -1,0 +1,14 @@
+site_name: LCAuncertain
+docs_dir: docs
+nav:
+  - Home: index.md
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+markdown_extensions:
+  - mdx_math
+  - callouts
+  - footnotes
+  - pymdownx.magiclink
+  - pymdownx.snippets:
+      check_paths: true
+
