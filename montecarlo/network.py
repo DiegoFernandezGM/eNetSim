@@ -125,7 +125,7 @@ class Network:
                 subsystem_emissions_tmp = round(subsystem_emissions_tmp,2)
                 subsystem_emissions[subsystem_name] = subsystem_emissions_tmp
 
-            print(f"{subsystem_name}: {subsystem_emissions[subsystem_name]} kg CO2")
+            #print(f"{subsystem_name}: {subsystem_emissions[subsystem_name]} kg CO2")
             total_emissions += subsystem_emissions_tmp
-        print(f"\nTotal CO2 emissions: {round(total_emissions, 2)} kg CO2")
+        #print(f"\nTotal CO2 emissions: {round(total_emissions, 2)} kg CO2")
         return subsystem_emissions, total_emissions

@@ -74,8 +74,8 @@
         ],
         "efficiency": 0.8,
         "electricity_conversion": 3.8,
-        "first_energy_consumption": "(input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * 3.5 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']",
-        "energy_consumption": "(((input_streams_0['flow_rate'] * input_streams_1['flow_rate'])-(input_streams_2['flow_rate']* input_streams_3['flow_rate'])) * 3.5 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']"
+        "first_energy_consumption": "(input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * 0.035 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']",
+        "energy_consumption": "(((input_streams_0['flow_rate'] * input_streams_1['flow_rate'])-(input_streams_2['flow_rate']* input_streams_3['flow_rate'])) * 0.035 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']"
     },
     "CoolingSubsystem": {
         "type": "CoolingSubsystem",
@@ -91,7 +91,7 @@
         ],
         "efficiency": 0.6,
         "electricity_conversion": 2.8,
-        "energy_consumption": "(input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * input_streams_2['flow_rate'] * 1.5 * abs(output_streams_0['temperature'] - input_streams_0['temperature']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']"
+        "energy_consumption": "(input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * input_streams_2['flow_rate'] * 0.015 * abs(output_streams_0['temperature'] - input_streams_0['temperature']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']"
     },
     "electricity_emission_factor": 0.5,
     "iterations": 5 

@@ -23,8 +23,8 @@ class Flows:
                         print(f"Error: No output stream with fluid {fluid_name} found in subsystem {from_subsystem_name}.")
                 else:
                     print(f"Error: Subsystem {from_subsystem_name} has no outputs.")
-            else:
-                print(f"Error: From subsystem {from_subsystem_name} does not exist.")
+            #else:
+                #print(f"Error: From subsystem {from_subsystem_name} does not exist.")
         elif "iteration" in config and config["iteration"] == iteration:
             # Create input stream from previous iteration
             input_stream = streams[config["fluid_name"]]

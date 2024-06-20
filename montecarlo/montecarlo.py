@@ -3,6 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 import seaborn as sns
+import csv
+import logging
+import time
 
 class MonteCarloSampler:
     def __init__(self, config):
@@ -42,55 +45,88 @@ class MonteCarloSampler:
             samples[param] = distribution
         return samples 
     
-    def run_simulation(self, num_samples):
-        results = []
-        total_emissions_results = []
-        for i in range(num_samples):
-            config_sample = self.config.copy()
-            for param, value in self.generate_samples(num_samples).items():
-                subsystem, key = param.split(".")
-                if key == "flow_rate":
-                    config_sample[subsystem]["input_stream"]["flow_rate"] = value[i]
-                elif key == "temperature":
-                    config_sample[subsystem]["input_stream"]["temperature"] = value[i]
-                elif key == "pressure":
-                    config_sample[subsystem]["input_stream"]["pressure"] = value[i]
-                elif key == "efficiency":
-                    config_sample[subsystem]["efficiency"] = value[i]
-                elif key == "electricity_conversion":
-                    config_sample[subsystem]["electricity_conversion"] = value[i]
-            network = Network(config_sample)
-            network.build_network()
-            network.simulate()
-            subsystem_emissions, total_emissions = network.calculate_emissions()
-            results.append(subsystem_emissions)
-            if subsystem_emissions is not None:
+    def run_simulation(self, num_samples, technique, output_file=None):
+        logging.info("Starting simulation with {} samples and technique {}".format(num_samples, technique))
+        try:
+            start_time = time.time()
+            results = []
+            total_emissions_results = []
+            for i in range(num_samples):
+                config_sample = self.config.copy()
+                for param, value in self.generate_samples(num_samples).items():
+                    subsystem, key = param.split(".")
+                    if key == "flow_rate":
+                        config_sample[subsystem]["input_stream"]["flow_rate"] = value[i]
+                    elif key == "temperature":
+                        config_sample[subsystem]["input_stream"]["temperature"] = value[i]
+                    elif key == "pressure":
+                        config_sample[subsystem]["input_stream"]["pressure"] = value[i]
+                    elif key == "efficiency":
+                        config_sample[subsystem]["efficiency"] = value[i]
+                    elif key == "electricity_conversion":
+                        config_sample[subsystem]["electricity_conversion"] = value[i]
+                network = Network(config_sample)
+                network.build_network()
+                network.simulate()
+                subsystem_emissions, total_emissions = network.calculate_emissions()
                 results.append(subsystem_emissions)
-            total_emissions_results.append(total_emissions)
-        
-        if total_emissions_results:
-            all_emissions = total_emissions_results
-            mean_all_emissions = np.mean(total_emissions_results)
-            std_all_emissions = np.std(total_emissions_results)
-
-            fig, ax = plt.subplots(figsize=(12, 6))
+                if subsystem_emissions is not None:
+                    results.append(subsystem_emissions)
+                total_emissions_results.append(total_emissions)
             
-            ax.hist(all_emissions, bins=100, density=True, alpha=0.6, label='All Emissions')
-            ax.set_xlim(np.min(all_emissions), np.max(all_emissions))
+            if total_emissions_results:
+                all_emissions = total_emissions_results
+                mean_all_emissions = np.mean(total_emissions_results)
+                std_all_emissions = np.std(total_emissions_results)
+                
+                sns.set_style('whitegrid')
+                fig, ax = plt.subplots(figsize=(12, 6))
+                
+                ax.hist(all_emissions, bins=100, density=True, alpha=0.6, label='All Emissions')
+                ax.set_xlim(np.min(all_emissions), np.max(all_emissions))
 
-            # PDF
-            x = np.linspace(np.min(all_emissions), np.max(all_emissions), 100)
-            pdf = norm.pdf(x, loc=mean_all_emissions, scale=std_all_emissions)
-            ax.plot(x, pdf, 'k', linewidth=2, label='Normal Distribution')
-            sns.kdeplot(all_emissions, fill=True, label='Kernel Density Estimate of Emissions', ax=ax)
+                # PDF
+                x = np.linspace(np.min(all_emissions), np.max(all_emissions), 100)
+                pdf = norm.pdf(x, loc=mean_all_emissions, scale=std_all_emissions)
+                ax.plot(x, pdf, 'k', linewidth=2, label='Normal Distribution')
+                sns.kdeplot(all_emissions, fill=True, label='Kernel Density Estimate of Emissions', ax=ax)
 
-            ax.set_title('Histogram of Total Emissions with Normal Distribution')
-            ax.set_xlabel('Emissions (kg CO2)')
-            ax.set_ylabel('Probability Density')
-            ax.legend()
-            plt.show()
+                ax.set_title('Histogram of Total Emissions with Normal Distribution')
+                ax.set_xlabel('Emissions (kg CO2)')
+                ax.set_ylabel('Probability Density')
+                ax.legend()
+                plt.show()
+            
+            end_time = time.time()
+            logging.info("Simulation took {:.2f} seconds".format(end_time - start_time))
 
-        return results
+            print("---------------")
+            print(f"Technique {technique}")
+            print("---------------")
+            print("All Emissions - Simulation Results:")
+            print("Mean: {:.2f}".format(mean_all_emissions))
+            print("Standard Deviation: {:.2f}".format(std_all_emissions))
+            print("---------------")
+
+            if output_file is not None:
+                mode = 'w'
+            else:
+                mode = 'a'
+
+            with open(output_file, mode, newline='') as f:
+                writer = csv.writer(f)
+                if mode == 'w':
+                    writer.writerow(["Subsystem", "Emissions"])
+                for result in results:
+                    for subsystem, emissions in result.items():
+                        writer.writerow([subsystem, emissions])        
+    
+            return results
+        
+        except Exception as e:
+            logging.error("Error in simulation: {}".format(e))
+        logging.info("Simulation completed")
+        
         
     def plot_subsystems(self, results):
         if results:
@@ -102,14 +138,20 @@ class MonteCarloSampler:
                 values = [result[key] for result in results]
                 subsystem_emissions_mean[key] = np.mean(values)
                 subsystem_emissions_std[key] = np.std(values)
-            print(f"Mean emissions: {subsystem_emissions_mean}")
-            print(f"Standard deviation of emissions: {subsystem_emissions_std}")
+            #print(f"Mean emissions: {subsystem_emissions_mean}")
+            #print(f"Standard deviation of emissions: {subsystem_emissions_std}")
             
             # Histogram and error-bars for each subsystem
             for subsystem_name in subsystem_emissions_mean.keys():
                 fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
 
                 subsystem_emissions = [result[subsystem_name] for result in results]
+                
+                print(f"{subsystem_name} Subsystem Emissions - Simulation Results:")
+                print("Mean: {:.2f}".format(np.mean(subsystem_emissions)))
+                print("Standard Deviation: {:.2f}".format(np.std(subsystem_emissions)))
+                print("---------------")
+
                 if subsystem_emissions:
                     #Histograms
                     axs[0].hist(subsystem_emissions, bins=100, density=True, alpha=0.6, label=subsystem_name, range=(0, subsystem_emissions_mean[subsystem_name]*2))
@@ -143,6 +185,4 @@ class MonteCarloSampler:
                     plt.show()
 
         else:
-            print("No valid emissions results found.")
-
-        
+            print("No valid emissions results found.")  
