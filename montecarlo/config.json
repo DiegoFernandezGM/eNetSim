@@ -19,8 +19,8 @@
             {"fluid_name": "Oxygen", "temperature": 90, "split_ratio": 0.21, "next_subsystem": null, "origin": true}
         ],
         "efficiency": 0.8,
-        "electricity_conversion": 3.6,
-        "energy_consumption": "input_streams_0['flow_rate'] * 2.44 * abs(output_streams_0['temperature'] - input_streams_0['temperature'])*inputs['efficiency']*inputs['electricity_conversion']"
+        "electricity_conversion": 3600,
+        "energy_consumption": "(input_streams_0['flow_rate'] * 2.44 * abs(output_streams_0['temperature'] - input_streams_0['temperature'])*inputs['efficiency'])/inputs['electricity_conversion']"
     },
     "HydrogenProduction": {
         "type": "HydrogenProduction",
@@ -42,8 +42,8 @@
             {"fluid_name": "Oxygen","temperature": 300, "split_ratio": 0.89, "next_subsystem": null, "origin": true}
         ],
         "efficiency": 0.8,
-        "electricity_conversion": 4.2,
-        "energy_consumption": "input_streams_0['flow_rate'] * 4.18 * abs(output_streams_0['temperature'] - input_streams_0['temperature'])*inputs['efficiency']*inputs['electricity_conversion']"
+        "electricity_conversion": 3600,
+        "energy_consumption": "(input_streams_0['flow_rate'] * 4.18 * abs(output_streams_0['temperature'] - input_streams_0['temperature'])*inputs['efficiency'])/inputs['electricity_conversion']"
     },
     "SyngasCompression": {
         "type": "SyngasCompression",
@@ -56,8 +56,8 @@
             {"fluid_name": "Hydrogen", "temperature": 350, "pressure": 500000, "mix_ratio": 0.5, "next_subsystem": "HaberBoschUnit"}
         ],
         "efficiency": 0.8,
-        "electricity_conversion": 3.2,
-        "energy_consumption": "(input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * 1.2 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']"
+        "electricity_conversion": 3600,
+        "energy_consumption": "((input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * 1.2 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency'])/inputs['electricity_conversion']"
     },
     "HaberBoschUnit": {
         "type": "HaberBoschUnit",
@@ -73,9 +73,9 @@
             {"fluid_name": "Hydrogen", "pressure": 15000000, "split_ratio": 0.85, "next_subsystem": "CoolingSubsystem"} 
         ],
         "efficiency": 0.8,
-        "electricity_conversion": 3.8,
-        "first_energy_consumption": "(input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * 0.035 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']",
-        "energy_consumption": "(((input_streams_0['flow_rate'] * input_streams_1['flow_rate'])-(input_streams_2['flow_rate']* input_streams_3['flow_rate'])) * 0.035 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']"
+        "electricity_conversion": 3600,
+        "first_energy_consumption": "((input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * 0.035 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency'])/inputs['electricity_conversion']",
+        "energy_consumption": "((((input_streams_0['flow_rate'] * input_streams_1['flow_rate'])-(input_streams_2['flow_rate']* input_streams_3['flow_rate'])) * 0.035 * (output_streams_0['pressure'] - input_streams_0['pressure']) / 1000)*inputs['efficiency'])/inputs['electricity_conversion']"
     },
     "CoolingSubsystem": {
         "type": "CoolingSubsystem",
@@ -90,9 +90,9 @@
             {"fluid_name": "Hydrogen", "pressure": 500000, "recycled_fraction": 0.77,  "next_subsystem": "HaberBoschUnit"}
         ],
         "efficiency": 0.6,
-        "electricity_conversion": 2.8,
-        "energy_consumption": "(input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * input_streams_2['flow_rate'] * 0.015 * abs(output_streams_0['temperature'] - input_streams_0['temperature']) / 1000)*inputs['efficiency']*inputs['electricity_conversion']"
+        "electricity_conversion": 3600,
+        "energy_consumption": "((input_streams_0['flow_rate'] * input_streams_1['flow_rate'] * input_streams_2['flow_rate'] * 0.015 * abs(output_streams_0['temperature'] - input_streams_0['temperature']) / 1000)*inputs['efficiency'])/inputs['electricity_conversion']"
     },
-    "electricity_emission_factor": 0.5,
+    "electricity_emission_factor": 0.2548,
     "iterations": 5 
 }

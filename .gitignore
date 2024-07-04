@@ -13,3 +13,6 @@ __pycache__/
 pip-log.txt
 pip-delete-this-directory.txt
 
+montecarlo/LatinHResults.csv
+montecarlo/MonteCarloResults.csv
+montecarlo/QuasiMCResults.csv

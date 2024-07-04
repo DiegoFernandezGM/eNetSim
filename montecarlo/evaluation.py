@@ -2,12 +2,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import ttest_ind, f_oneway
 import seaborn as sns
+from pem import PEMAnalysis
+
 class Evaluator:
     def __init__(self, mc_results, qmc_results, lhs_results):
         self.mc_results = mc_results
         self.qmc_results = qmc_results
         self.lhs_results = lhs_results
         self.stats = self.calculate_statistical_measures()
+        self.pem_analysis = PEMAnalysis(mc_results)
 
     def calculate_statistical_measures(self):
         techniques = ['mc', 'qmc', 'lhs']
@@ -76,3 +79,39 @@ class Evaluator:
 
             f_stat, p_val = f_oneway(self.mc_results[subsystem], self.qmc_results[subsystem], self.lhs_results[subsystem])
             print(f"ANOVA (all techniques) for {subsystem}: f-stat={f_stat:.4f}, p-val={p_val:.4f}")
+
+    def perform_pem_analysis(self):
+        self.pem_analysis.perform_pem_analysis()
+
+    def plot_pem_results(self):
+        sns.set_style('whitegrid')
+
+        # Figure 1: Skewness
+        plt.figure(figsize=(10, 6))
+        for i in range(self.pem_analysis.num_subsystems):
+            plt.plot([self.pem_analysis.skewnesses[i]], label=f'Skewness Subsystem {i+1}', marker='o')
+        plt.xlabel('Input Variable Z', fontsize=14)
+        plt.ylabel('Skewness', fontsize=14)
+        plt.title('Skewness of All Subsystems', fontsize=16)
+        plt.legend(loc='upper right', title='Skewness')
+        plt.show()
+
+        # Figure 2: Kurtosis
+        plt.figure(figsize=(10, 6))
+        for i in range(self.pem_analysis.num_subsystems):
+            plt.plot([self.pem_analysis.kurtoses[i]], label=f'Kurtosis Subsystem {i+1}', marker='o')
+        plt.xlabel('Input Variable Z', fontsize=14)
+        plt.ylabel('Kurtosis', fontsize=14)
+        plt.title('Kurtosis of All Subsystems', fontsize=16)
+        plt.legend(loc='upper right', title='Kurtosis')
+        plt.show()
+
+        # Figure 3: Variance
+        plt.figure(figsize=(10, 6))
+        for i in range(self.pem_analysis.num_subsystems):
+            plt.plot([self.pem_analysis.variances[i]], label=f'Variance Subsystem {i+1}', marker='o')
+        plt.xlabel('Input Variable Z', fontsize=14)
+        plt.ylabel('Variance', fontsize=14)
+        plt.title('Variance of All Subsystems', fontsize=16)
+        plt.legend(loc='upper right', title='Variance')
+        plt.show()

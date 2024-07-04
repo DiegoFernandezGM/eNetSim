@@ -3,6 +3,15 @@
 
 --8<-- "README.md"
 
+## Table of Contents
+
+- [Folder Layout](#folder-layout)
+- [Pre-requisites](#pre-requisites)
+- [Getting Started](#Running-the-code)
+- [Running the Code](#running-the-code)
+- [Code Structure](#code-structure)
+- [Documentation Editing](#documentation-editing)
+
 ## Folder layout
 
     flexible_atrchitecture/         # main code

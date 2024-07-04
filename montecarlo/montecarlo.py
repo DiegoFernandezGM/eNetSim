@@ -1,7 +1,8 @@
 from network import Network
+from distribution import DistributionAnalyzer
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import norm
+from scipy.stats import norm, lognorm, expon, gamma
 import seaborn as sns
 import csv
 import logging
@@ -22,23 +23,101 @@ class MonteCarloSampler:
                         input_params.append(f"{subsystem}.{key}")
         return input_params
         
+    #def assign_probability_distributions(self):
+    #    param_distributions = {}
+    #    for param in self.input_params:
+    #        if "flow_rate" in param:
+    #            param_distributions[param] = np.random.normal(loc=self.config[param.split(".")[0]][param.split(".")[1]], scale=10, size=1000)
+    #        elif "temperature" in param:
+    #            param_distributions[param] = np.random.uniform(low=self.config[param.split(".")[0]][param.split(".")[1]] - 10, high=self.config[param.split(".")[0]][param.split(".")[1]] + 10, size=1000)
+    #        elif "pressure" in param:
+    #            param_distributions[param] = np.random.uniform(low=self.config[param.split(".")[0]][param.split(".")[1]] - 1000, high=self.config[param.split(".")[0]][param.split(".")[1]] + 1000, size=1000)
+    #        elif "efficiency" in param:
+    #            param_distributions[param] = np.random.uniform(low=0.5, high=0.9, size=1000)
+    #        elif "electricity_conversion" in param:
+    #            param_distributions[param] = np.random.uniform(low=2, high=5, size=1000)
+    #        else:
+    #            param_distributions[param] = np.random.uniform(low=0, high=1, size=1000)
+    #    return param_distributions
+    
+    #def assign_probability_distributions(self):
+    #    param_distributions = {}
+    #    for param in self.input_params:
+    #        data = self.config[param.split(".")[0]][param.split(".")[1]]  # assume this is the data for the parameter
+    #        analyzer = DistributionAnalyzer(data)
+    #        results = analyzer.fit_distributions()
+    #        aic_bic_values = analyzer.calculate_aic_bic(results)
+    #        best_dist = analyzer.select_best_distribution(aic_bic_values)
+    #        
+    #        if best_dist == norm:
+    #            param_distributions[param] = np.random.normal(loc=data, scale=10, size=1000)
+    #        elif best_dist == lognorm:
+    #            param_distributions[param] = np.random.lognormal(mean=data, sigma=1, size=1000)
+    #        elif best_dist == expon:
+    #            param_distributions[param] = np.random.exponential(scale=data, size=1000)
+    #        elif best_dist == gamma:
+    #            param_distributions[param] = np.random.gamma(shape=1, scale=data, size=1000)
+    #        else:
+    #            param_distributions[param] = np.random.uniform(low=0, high=1, size=1000)
+    #    return param_distributions
+    
     def assign_probability_distributions(self):
         param_distributions = {}
         for param in self.input_params:
             if "flow_rate" in param:
-                param_distributions[param] = np.random.normal(loc=self.config[param.split(".")[0]][param.split(".")[1]], scale=10, size=1000)
+                data = self.config[param.split(".")[0]][param.split(".")[1]]
+                if isinstance(data, list) or isinstance(data, tuple):
+                    if len(data) == 1:
+                        param_distributions[param] = np.random.normal(loc=data, scale=10, size=1000)
+                    else:
+                        handler = DistributionAnalyzer(data)
+                        param_distributions[param] = handler.analyze_and_sample()
+                else:
+                    param_distributions[param] = np.random.normal(loc=data, scale=10, size=1000)
             elif "temperature" in param:
-                param_distributions[param] = np.random.uniform(low=self.config[param.split(".")[0]][param.split(".")[1]] - 10, high=self.config[param.split(".")[0]][param.split(".")[1]] + 10, size=1000)
+                data = self.config[param.split(".")[0]][param.split(".")[1]]
+                if isinstance(data, list) or isinstance(data, tuple):
+                    if len(data) == 1:
+                        param_distributions[param] = np.random.uniform(low=data - 10, high=data + 10, size=1000)
+                    else:
+                        handler = DistributionAnalyzer(data)
+                        param_distributions[param] = handler.analyze_and_sample()
+                else:
+                    param_distributions[param] = np.random.uniform(low=data - 10, high=data + 10, size=1000)
             elif "pressure" in param:
-                param_distributions[param] = np.random.uniform(low=self.config[param.split(".")[0]][param.split(".")[1]] - 1000, high=self.config[param.split(".")[0]][param.split(".")[1]] + 1000, size=1000)
+                data = self.config[param.split(".")[0]][param.split(".")[1]]
+                if isinstance(data, list) or isinstance(data, tuple):
+                    if len(data) == 1:
+                        param_distributions[param] = np.random.uniform(low=data - 1000, high=data + 1000, size=1000)
+                    else:
+                        handler = DistributionAnalyzer(data)
+                        param_distributions[param] = handler.analyze_and_sample()
+                else:
+                    param_distributions[param] = np.random.uniform(low=data - 1000, high=data + 1000, size=1000)
             elif "efficiency" in param:
-                param_distributions[param] = np.random.uniform(low=0.5, high=0.9, size=1000)
+                data = self.config[param.split(".")[0]][param.split(".")[1]]
+                if isinstance(data, list) or isinstance(data, tuple):
+                    if len(data) == 1:
+                        param_distributions[param] = np.random.uniform(low=0.5, high=0.9, size=1000)
+                    else:
+                        handler = DistributionAnalyzer(data)
+                        param_distributions[param] = handler.analyze_and_sample()
+                else:
+                    param_distributions[param] = np.random.uniform(low=0.5, high=0.9, size=1000)
             elif "electricity_conversion" in param:
-                param_distributions[param] = np.random.uniform(low=2, high=5, size=1000)
+                data = self.config[param.split(".")[0]][param.split(".")[1]]
+                if isinstance(data, list) or isinstance(data, tuple):
+                    if len(data) == 1:
+                        param_distributions[param] = np.random.uniform(low=2, high=5, size=1000)
+                    else:
+                        handler = DistributionAnalyzer(data)
+                        param_distributions[param] = handler.analyze_and_sample()
+                else:
+                    param_distributions[param] = np.random.uniform(low=2, high=5, size=1000)
             else:
-                param_distributions[param] = np.random.uniform(low=0, high=1, size=1000)
+                    param_distributions[param] = np.random.uniform(low=0, high=1, size=1000)
         return param_distributions
-    
+
     def generate_samples(self, num_samples):
         samples = {}
         for param, distribution in self.param_distributions.items():
@@ -183,6 +262,27 @@ class MonteCarloSampler:
                     
                     plt.tight_layout()
                     plt.show()
+                
+            # Histogram and error-bars for each subsystem
+            for subsystem_name in subsystem_emissions_mean.keys():
+                fig2, ax = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
 
+                subsystem_emissions = [result[subsystem_name] for result in results]
+
+                if subsystem_emissions:
+                    #Violin plot
+                    ax[0].violinplot([subsystem_emissions], showmeans=True, showmedians=True)
+                    ax[0].set_title(subsystem_name)
+                    ax[0].set_xlabel('Emissions (kg CO2)')
+                    ax[0].set_ylabel('Probability Density')
+
+                    #CDF
+                    ax[1].plot(np.sort(subsystem_emissions), np.linspace(0, 1, len(subsystem_emissions), endpoint=False))
+                    ax[1].set_title(subsystem_name)
+                    ax[1].set_xlabel('Emissions (kg CO2)')
+                    ax[1].set_ylabel('Cumulative Probability')
+                    
+                    plt.tight_layout()
+                    plt.show()
         else:
             print("No valid emissions results found.")  

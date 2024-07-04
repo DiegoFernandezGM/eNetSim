@@ -12,7 +12,7 @@ def calculate_energy_consumption(network, iteration):
         output_streams = subsystem.outputs
         
         inputs = {}
-        #Gather stream properties
+
         for i, stream in enumerate(input_streams):
             inputs[f'input_streams_{i}'] = stream.get_all_properties()
             #print(f"{inputs[f'input_streams_{i}']}")
@@ -20,14 +20,18 @@ def calculate_energy_consumption(network, iteration):
             inputs[f'output_streams_{i}'] = stream.get_all_properties()
             #print(f"{inputs[f'output_streams_{i}']}")
         
-        # Add to inputs dictionary
         inputs['input_streams'] = input_streams
         inputs['output_streams'] = output_streams
         inputs['iteration'] = iteration
         inputs['efficiency'] = efficiency
         inputs['electricity_conversion'] = electricity_conversion
+        
+        if subsystem_name == 'HaberBoschUnit':
+            print(f"{inputs[f'input_streams_{0}']}")
+            print(f"{inputs[f'input_streams_{1}']}")
+            print(f"{inputs[f'input_streams_{2}']}")
+            print(f"{inputs[f'input_streams_{3}']}")
 
-        # Energy consumption formulas in Json File
         try:
             energy_consumption = eval(energy_consumption_formula, {"inputs": inputs}, inputs)
         except Exception as e:
