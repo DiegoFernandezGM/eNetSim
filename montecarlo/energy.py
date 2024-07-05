@@ -26,11 +26,11 @@ def calculate_energy_consumption(network, iteration):
         inputs['efficiency'] = efficiency
         inputs['electricity_conversion'] = electricity_conversion
         
-        if subsystem_name == 'HaberBoschUnit':
-            print(f"{inputs[f'input_streams_{0}']}")
-            print(f"{inputs[f'input_streams_{1}']}")
-            print(f"{inputs[f'input_streams_{2}']}")
-            print(f"{inputs[f'input_streams_{3}']}")
+        #if subsystem_name == 'HaberBoschUnit':
+        #    print(f"{inputs[f'input_streams_{0}']}")
+        #    print(f"{inputs[f'input_streams_{1}']}")
+        #    print(f"{inputs[f'input_streams_{2}']}")
+        #    print(f"{inputs[f'input_streams_{3}']}")
 
         try:
             energy_consumption = eval(energy_consumption_formula, {"inputs": inputs}, inputs)

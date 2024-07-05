@@ -77,6 +77,7 @@ class Network:
 
     def simulate(self):
         iterations = self.config_data.get('iterations', 1)
+        ammonia_flow = 0
         for iteration in range(iterations):
             #print(f"\nIteration {iteration + 1}:")
             for subsystem_name, subsystem in self.subsystems.items():
@@ -88,6 +89,11 @@ class Network:
                 #for output_stream in subsystem.outputs:
                     #output_stream.print_info()
                 self.create_streams(subsystem, self.config_data[subsystem_name], subsystem_name, iteration + 1)
+                for output_stream_config in self.config_data[subsystem_name]["output_streams"]:
+                    if 'final' in output_stream_config and output_stream_config['final'] is True:
+                        for stream in subsystem.outputs:
+                            ammonia_flow = stream.get_property('massflow')
+        return ammonia_flow
     
     def calculate_energy_consumption(self):
         iterations = self.config_data.get('iterations', 1)
@@ -114,18 +120,33 @@ class Network:
 
     def calculate_emissions(self):
         energy_consumption_results = self.calculate_energy_consumption()
-        total_emissions = 0
+        total_emission = 0
+        subsystem_emission = {}
         subsystem_emissions = {}
-        #print(f"\n")
-        for subsystem_name, energy_consumptions in energy_consumption_results.items():
-            subsystem_emissions_tmp = 0
-            for energy_consumption in energy_consumptions:
-                emission_factor = self.get_emission_factor()
-                subsystem_emissions_tmp += energy_consumption * emission_factor
-                subsystem_emissions_tmp = round(subsystem_emissions_tmp,2)
-                subsystem_emissions[subsystem_name] = subsystem_emissions_tmp
+
+        #for subsystem_name, energy_consumptions in energy_consumption_results.items():
+            #subsystem_emissions_tmp = 0
+            #for energy_consumption in energy_consumptions:
+            #    emission_factor = self.get_emission_factor()
+            #    subsystem_emissions_tmp += energy_consumption * emission_factor
+            #    subsystem_emissions_tmp = round(subsystem_emissions_tmp,2)
+            #    subsystem_emissions[subsystem_name] = subsystem_emissions_tmp
 
             #print(f"{subsystem_name}: {subsystem_emissions[subsystem_name]} kg CO2")
-            total_emissions += subsystem_emissions_tmp
+            #total_emissions += subsystem_emissions_tmp
         #print(f"\nTotal CO2 emissions: {round(total_emissions, 2)} kg CO2")
+        iteration = self.config_data.get('iterations', 1)
+        ammonia_flow = self.simulate()
+        for subsystem_name, energy_consumptions in energy_consumption_results.items():
+            energy_consumption = energy_consumptions[iteration-1]
+            emission_factor = self.get_emission_factor()
+            subsystem_emission[subsystem_name] = energy_consumption * emission_factor
+            print(f"{subsystem_name}: {round(subsystem_emission[subsystem_name],2)} kg CO2")
+            total_emission += subsystem_emission[subsystem_name]
+            if ammonia_flow > 0:                      
+                subsystem_emissions[subsystem_name] = subsystem_emission[subsystem_name]/(ammonia_flow)
+                print(f"{subsystem_name}: {round(subsystem_emissions[subsystem_name],6)} kg CO2/kg NH3")
+                total_emissions = total_emission/(ammonia_flow)
+        print(f"Total CO2 emissions: {round(total_emission, 2)} kg CO2")
+        print(f"Total CO2 emissions: {round(total_emissions, 6)} kg CO2/kg NH3")
         return subsystem_emissions, total_emissions

@@ -34,32 +34,32 @@ def main():
     logging.basicConfig(filename='simulation.log', level=logging.INFO, format='%(message)s')
     
     mc_sampler = MonteCarloSampler(config)
-    mc_results = mc_sampler.run_simulation(100, 'MonteCarlo', output_file='MonteCarloResults.csv')
-    sampler = Sampler(config)
-    qmc_results = sampler.run_quasi_simulation(100, 'Quasi-MonteCarlo', output_file='QuasiMCResults.csv', sensitivity = True) # Parameters Sensitivity: Sobol Indices
-    lhs_results = sampler.run_latin_simulation(100, 'Latin Hypercube', output_file='LatinHResults.csv')
+    mc_results = mc_sampler.run_simulation(1000, 'MonteCarlo', output_file='MonteCarloResults.csv')
+    #sampler = Sampler(config)
+    #qmc_results = sampler.run_quasi_simulation(100, 'Quasi-MonteCarlo', output_file='QuasiMCResults.csv', sensitivity = True) # Parameters Sensitivity: Sobol Indices
+    #lhs_results = sampler.run_latin_simulation(100, 'Latin Hypercube', output_file='LatinHResults.csv')
     
     mc_sampler.plot_subsystems(mc_results)
-    sampler.plot_subsystems(qmc_results)
-    sampler.plot_subsystems(lhs_results)
+    #sampler.plot_subsystems(qmc_results)
+    #sampler.plot_subsystems(lhs_results)
     
-    mc_subsystem = {subsystem: [result[subsystem] for result in mc_results] for subsystem in mc_results[0].keys()}
-    qmc_subsystem = {subsystem: [result[subsystem] for result in qmc_results] for subsystem in qmc_results[0].keys()}
-    lhs_subsystem = {subsystem: [result[subsystem] for result in lhs_results] for subsystem in lhs_results[0].keys()}    
+    #mc_subsystem = {subsystem: [result[subsystem] for result in mc_results] for subsystem in mc_results[0].keys()}
+    #qmc_subsystem = {subsystem: [result[subsystem] for result in qmc_results] for subsystem in qmc_results[0].keys()}
+    #lhs_subsystem = {subsystem: [result[subsystem] for result in lhs_results] for subsystem in lhs_results[0].keys()}    
 
-    evaluator = Evaluator(mc_subsystem, qmc_subsystem, lhs_subsystem)
-    evaluator.compare_statistical_measures()
-    evaluator.plot_boxplots()
-    evaluator.perform_statistical_tests()
-    evaluator.perform_pem_analysis()
-    evaluator.plot_pem_results()
+    #evaluator = Evaluator(mc_subsystem, qmc_subsystem, lhs_subsystem)
+    #evaluator.compare_statistical_measures()
+    #evaluator.plot_boxplots()
+    #evaluator.perform_statistical_tests()
+    #evaluator.perform_pem_analysis()
+    #evaluator.plot_pem_results()
     
-    bayesian_analysis = BayesianAnalysis(config, network)
-    posterior_samples = bayesian_analysis.perform_bayesian_analysis()
-    bayesian_analysis.plot_posterior_samples(posterior_samples)
-    bayesian_analysis.plot_posterior_distributions(posterior_samples)
-    bayesian_analysis.plot_uncertainty_intervals(posterior_samples)
-    bayesian_analysis.analyze_uncertainty(posterior_samples)
+    #bayesian_analysis = BayesianAnalysis(config, network)
+    #posterior_samples = bayesian_analysis.perform_bayesian_analysis()
+    #bayesian_analysis.plot_posterior_samples(posterior_samples)
+    #bayesian_analysis.plot_posterior_distributions(posterior_samples)
+    #bayesian_analysis.plot_uncertainty_intervals(posterior_samples)
+    #bayesian_analysis.analyze_uncertainty(posterior_samples)
 
 if __name__ == "__main__":
     main()

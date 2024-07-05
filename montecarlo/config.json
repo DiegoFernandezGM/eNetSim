@@ -65,7 +65,8 @@
             {"from_subsystem": "SyngasCompression", "fluid_name": "Nitrogen"},
             {"from_subsystem": "SyngasCompression", "fluid_name": "Hydrogen"},
             {"from_subsystem": "CoolingSubsystem","fluid_name": "Nitrogen", "iteration": 2},
-            {"from_subsystem": "CoolingSubsystem","fluid_name": "Hydrogen","iteration": 2} 
+            {"from_subsystem": "CoolingSubsystem","fluid_name": "Hydrogen","iteration": 2}
+
         ],
         "output_streams": [
             {"fluid_name": "Ammonia", "pressure": 15000000, "split_ratio": 0.15, "next_subsystem": "CoolingSubsystem", "origin": true},
@@ -85,7 +86,7 @@
             {"from_subsystem": "HaberBoschUnit", "fluid_name": "Hydrogen"}
         ],
         "output_streams": [
-            {"fluid_name": "Ammonia", "temperature": 238, "pressure": 1500000,  "next_subsystem": null},
+            {"fluid_name": "Ammonia", "temperature": 238, "pressure": 1500000,  "next_subsystem": null, "final": true},
             {"fluid_name": "Nitrogen", "pressure": 500000, "recycled_fraction": 0.77,  "next_subsystem": "HaberBoschUnit"},
             {"fluid_name": "Hydrogen", "pressure": 500000, "recycled_fraction": 0.77,  "next_subsystem": "HaberBoschUnit"}
         ],
