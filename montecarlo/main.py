@@ -6,6 +6,7 @@ from bayesian import BayesianAnalysis
 import logging
 import argparse
 from evaluation import Evaluator
+from analytical import UncertaintyAnalysis
 
 def main():
 
@@ -33,13 +34,15 @@ def main():
 
     logging.basicConfig(filename='simulation.log', level=logging.INFO, format='%(message)s')
     
+    #MonteCarlo, Quasi-MonteCarlo & Latin Hypercube
     mc_sampler = MonteCarloSampler(config)
-    mc_results = mc_sampler.run_simulation(1000, 'MonteCarlo', output_file='MonteCarloResults.csv')
+    mc_results, uncertainty_mc = mc_sampler.run_simulation(5, 'MonteCarlo', output_file='MonteCarloResults.csv')
+    mc_sampler.visualize_emission_uncertainty(uncertainty_mc)
     #sampler = Sampler(config)
     #qmc_results = sampler.run_quasi_simulation(100, 'Quasi-MonteCarlo', output_file='QuasiMCResults.csv', sensitivity = True) # Parameters Sensitivity: Sobol Indices
     #lhs_results = sampler.run_latin_simulation(100, 'Latin Hypercube', output_file='LatinHResults.csv')
     
-    mc_sampler.plot_subsystems(mc_results)
+    #mc_sampler.plot_subsystems(mc_results)
     #sampler.plot_subsystems(qmc_results)
     #sampler.plot_subsystems(lhs_results)
     
@@ -47,6 +50,7 @@ def main():
     #qmc_subsystem = {subsystem: [result[subsystem] for result in qmc_results] for subsystem in qmc_results[0].keys()}
     #lhs_subsystem = {subsystem: [result[subsystem] for result in lhs_results] for subsystem in lhs_results[0].keys()}    
 
+    # Statistical analysis
     #evaluator = Evaluator(mc_subsystem, qmc_subsystem, lhs_subsystem)
     #evaluator.compare_statistical_measures()
     #evaluator.plot_boxplots()
@@ -54,12 +58,25 @@ def main():
     #evaluator.perform_pem_analysis()
     #evaluator.plot_pem_results()
     
+    # Bayesian inference analysis
     #bayesian_analysis = BayesianAnalysis(config, network)
     #posterior_samples = bayesian_analysis.perform_bayesian_analysis()
     #bayesian_analysis.plot_posterior_samples(posterior_samples)
     #bayesian_analysis.plot_posterior_distributions(posterior_samples)
     #bayesian_analysis.plot_uncertainty_intervals(posterior_samples)
     #bayesian_analysis.analyze_uncertainty(posterior_samples)
+    
+    # Analytical uncertainty analysis
+    #uncertainty_analysis = UncertaintyAnalysis(network, config, mc_sampler)
+    #uncertainty_analysis.calculate_uncertainties()
+    #uncertainty_analysis.print_uncertainties()
+    uncertainty_analysis = UncertaintyAnalysis(config)
+    mean_emissions, parameter_labels, uncertainty_ts  = uncertainty_analysis.calculate_emission_uncertainty(iteration=1)
+    uncertainty_analysis.visualize_emission_uncertainty(parameter_labels, uncertainty_ts)
+
+    print(f"Mean Emissions: {mean_emissions}")
+    print(f"Emission Uncertainty - TS: {uncertainty_ts}")
+    print(f"Emission Uncertainty - MC: {uncertainty_mc}")
 
 if __name__ == "__main__":
     main()
