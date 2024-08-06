@@ -177,20 +177,16 @@ class MonteCarloSampler:
                 
                 for param, value in samples.items():
                     keys = param.split(".")
-                    print(f"Param: {param}, Keys: {keys}")
+                    #print(f"Param: {param}, Keys: {keys}")
                     if len(keys) == 4:
-                        print("BEFOREE")
                         if keys[1] == "output_streams":
-                            print("HOLAAA")
                             module_name, output_streams_name, stream_index, sub_param_name = keys
                             stream_index = int(stream_index)
                             subsystem_name = f"{module_name}.{output_streams_name}"
                             if module_name in subsystem_emissions:
                                 if sub_param_name == "temperature":
-                                    print("HAYTEMPOUT")
                                     parameter_emissions_results[param].append(subsystem_emissions[module_name])
                                 elif sub_param_name == "pressure":
-                                    print("hayoutpress")
                                     parameter_emissions_results[param].append(subsystem_emissions[module_name])
                     elif len(keys) == 3:
                         module_name, input_stream_name, sub_param_name = keys

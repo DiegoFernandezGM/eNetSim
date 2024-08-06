@@ -7,6 +7,10 @@ import logging
 import argparse
 from evaluation import Evaluator
 from analytical import UncertaintyAnalysis
+from possibilistic import PossibilisticUncertaintyAnalysis
+import math
+import numpy as np 
+import matplotlib.pyplot as plt
 
 def main():
 
@@ -36,7 +40,7 @@ def main():
     
     #MonteCarlo, Quasi-MonteCarlo & Latin Hypercube
     mc_sampler = MonteCarloSampler(config)
-    mc_results, uncertainty_mc = mc_sampler.run_simulation(5, 'MonteCarlo', output_file='MonteCarloResults.csv')
+    mc_results, uncertainty_mc = mc_sampler.run_simulation(100, 'MonteCarlo', output_file='MonteCarloResults.csv')
     mc_sampler.visualize_emission_uncertainty(uncertainty_mc)
     #sampler = Sampler(config)
     #qmc_results = sampler.run_quasi_simulation(100, 'Quasi-MonteCarlo', output_file='QuasiMCResults.csv', sensitivity = True) # Parameters Sensitivity: Sobol Indices
@@ -67,16 +71,51 @@ def main():
     #bayesian_analysis.analyze_uncertainty(posterior_samples)
     
     # Analytical uncertainty analysis
-    #uncertainty_analysis = UncertaintyAnalysis(network, config, mc_sampler)
-    #uncertainty_analysis.calculate_uncertainties()
-    #uncertainty_analysis.print_uncertainties()
     uncertainty_analysis = UncertaintyAnalysis(config)
-    mean_emissions, parameter_labels, uncertainty_ts  = uncertainty_analysis.calculate_emission_uncertainty(iteration=1)
-    uncertainty_analysis.visualize_emission_uncertainty(parameter_labels, uncertainty_ts)
+    #mean_emissions, parameter_labels, uncertainty_ts  = uncertainty_analysis.calculate_emission_uncertainty(iteration=5)
+    #uncertainty_analysis.visualize_emission_uncertainty(parameter_labels, uncertainty_ts)
+    uncertainty_emissions = uncertainty_analysis.run()
+    uncertainty_analysis.plot_uncertainties(uncertainty_emissions)
+    for key, value in uncertainty_emissions.items():
+        print(f"Estimated uncertainty in emissions for {key}: {value:.2f}")
 
-    print(f"Mean Emissions: {mean_emissions}")
-    print(f"Emission Uncertainty - TS: {uncertainty_ts}")
-    print(f"Emission Uncertainty - MC: {uncertainty_mc}")
+    #print(f"Mean Emissions: {mean_emissions}")
+    #print(f"Emission Uncertainty - TS: {uncertainty_ts}")
+    #print(f"Emission Uncertainty - MC: {uncertainty_mc}")
+
+    
+    # Function to convert lambda strings back to functions
+    #def lambda_parser(lambda_str):
+    #    return eval(f"lambda x: {lambda_str}")
+
+    # Read JSON file
+    with open('uncertain_params.json', 'r') as f:
+        uncertain_params = json.load(f)
+
+    defuzzification_methods = {
+        'centroid'}
+    #    'bisector',
+    #    'mom',
+    #    'som',
+    #    'lom'}
+
+    possibilistic_analysis = PossibilisticUncertaintyAnalysis(Network, config, uncertain_params, defuzzification_methods)
+    results = possibilistic_analysis.run_possibilistic_uncertainty_analysis()
+
+    for method, result in results.items():
+        crisp_output = result["crisp_outputs"]
+        uncertainty_propagation = result["uncertainty_propagation"]
+        parameter_uncertainties = result["parameter_uncertainties"]
+    
+        print(f"Defuzzification Method: {method}")
+        print(f"Crisp Output: {crisp_output}")
+        print(f"Uncertainty Propagation: {uncertainty_propagation}")
+        print(f"Parameter Uncertainties: {parameter_uncertainties}")
+
+        possibilistic_analysis.visualize_uncertainty(crisp_output, uncertainty_propagation, parameter_uncertainties)
+
+    print(uncertainty_mc)
+    #print()
 
 if __name__ == "__main__":
     main()
