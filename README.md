@@ -63,7 +63,8 @@ Emissions and Energy Consumption: The primary outputs of the code are the calcul
 **Uncertainty Quantification**: The code calculates and outputs the uncertainty in energy consumption and emissions for each subsystem and the entire system. This includes:
 
 - **Mean**: The average output across all simulations.
-Standard Deviation: A measure of the variability in the outputs.
+
+- **Standard Deviation**: A measure of the variability in the outputs.
 
 - **Confidence Intervals**: For probabilistic methods, the code computes confidence intervals to represent the range within which the true value likely falls.
 
@@ -178,7 +179,6 @@ If using Visual Studio Code, simply open the project and type **Run** to execute
 
 To pipe and save the results to a file, use:
 
-bash
 ```
 $ python main.py > results.txt
 ```
@@ -186,7 +186,6 @@ $ python main.py > results.txt
 
 Use custom configuration files if needed:
 
-bash
 ```
 $ python main.py --config=path/to/your/config.json --uncertain_params=path/to/your/uncertain_params.json
 ```
@@ -201,21 +200,18 @@ Run specific uncertainty analysis scripts directly:
 
 - **Bayesian Analysis:**
 
-bash
 ```
 $ python bayesian.py
 ```
 
 - **Analytical Uncertainty Analysis:**
 
-bash
 ```
 $ python analytical.py
 ```
 
 - **Possibilistic Uncertainty Analysis:**
 
-bash
 ```
 $ python possibilistic.py
 ```
@@ -230,7 +226,7 @@ The main function, ***main()***, serves as the entry point of the program and is
 
 The program then proceeds to load the network configuration from a JSON file (***config.json***). This configuration file defines the subsystems in the network, their input and output streams, and other relevant parameters such as efficiency and energy consumption formulas. The configuration is crucial as it dictates how the network is constructed and simulated.
 
-With the configuration loaded, the program initialises the Network class. The Network class is designed to represent the entire network of subsystems, which are dynamically created based on the configuration. The class uses a SubsystemRegistry to manage and instantiate these subsystems, ensuring that the network can be easily extended or modified by simply updating the configuration file.
+With the configuration loaded, the program initialises the ***Network*** class. The ***Network*** class is designed to represent the entire network of subsystems, which are dynamically created based on the configuration. The class uses a SubsystemRegistry to manage and instantiate these subsystems, ensuring that the network can be easily extended or modified by simply updating the configuration file.
 
 Once the network is built, the program simulates it over a specified number of iterations. During each iteration, the subsystems interact through their input and output streams, and the energy consumption and emissions are calculated for each subsystem. These calculations are performed using the ***calculate_energy_consumption function***, which evaluates the energy consumption formulas defined in the configuration.
 
@@ -266,7 +262,7 @@ The code is organized into several Python files and two JSON configuration files
 
 - ***energy.py'***: Provides functions to calculate the energy consumption of subsystems within the network.
 
--***montecarlo.py'***: Implements Monte Carlo sampling and simulation methods.
+- ***montecarlo.py'***: Implements Monte Carlo sampling and simulation methods.
 
 - ***distribution.py***: Includes the DistributionAnalyzer class, responsible for analyzing and managing statistical distributions.
 
@@ -318,7 +314,7 @@ The ***Network*** class is central to simulating the industrial system. It model
 
 - **Simulation**: Runs the network simulation across defined iterations, updating streams and calculating the final ammonia flow.
 
-- **Energy Consumption***: Calculates the energy consumption for each subsystem based on configuration formulas.
+- **Energy Consumption**: Calculates the energy consumption for each subsystem based on configuration formulas.
 
 - **Emissions Calculation**: Computes CO2 emissions based on energy consumption and the emission factor defined in the configuration.
 
@@ -368,7 +364,8 @@ This module implements Monte Carlo sampling and simulation methods.
 - **Probability Distribution Assignment**: Assigns probability distributions to the identified parameters.
 
 - **Sample Generation**: Generates samples for the parameters based on their distributions.
--***Simulation Execution: Runs the Monte Carlo simulation and calculates emission uncertainties.
+
+- **Simulation Execution**: Runs the Monte Carlo simulation and calculates emission uncertainties.
 
 - **Visualization**: Provides methods to visualize the simulation results, including histograms, error bars, violin plots, and cumulative distribution functions.
 
@@ -468,7 +465,6 @@ The ***config.json*** file defines the configuration for the industrial system, 
 
 Example Structure:
 
-json
 ```
 {
     "ASU": {
@@ -503,7 +499,6 @@ This JSON file contains the definitions for uncertain parameters used in the sys
 
 Example Structure:
 
-json
 ```
 [
   {
