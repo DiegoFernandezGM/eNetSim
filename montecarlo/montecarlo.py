@@ -1,21 +1,23 @@
+from importer import *
+
 from network import Network
 from distribution import DistributionAnalyzer
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import norm, lognorm, expon, gamma
-import seaborn as sns
-import csv
-import logging
-import time
-import scipy.stats as stats
 
 class MonteCarloSampler:
     def __init__(self, config):
+
+        ##  Initializes Monte Carlo Sampler with the given configuration
+        ##  Identifies in/output params and assigns probability distributions
+
         self.config = config
         self.input_params, self.output_params = self.identify_input_params()
         self.param_distributions = self.assign_probability_distributions()
 
     def identify_input_params(self):
+
+        ##  Identifies in/output parameters in the config: 
+        ##  Recursively searches through the json file to find relevant params such as 'input_stream', 'output_streams', 'efficiency' and 'electricity_conversion'
+
         input_params = []
         output_params = []
         
@@ -40,15 +42,21 @@ class MonteCarloSampler:
         return input_params, output_params
     
     def assign_probability_distributions(self):
+
+        ##  Assigns probability distributions to the identified in/outputs
+        ##  These are based on the parameter type and provided data in config
+        ##  If params are provided in ranges of possible values: DistributionAnalyzer finds best-fit distribution 
+
         param_distributions = {}
         for param in self.input_params + self.output_params:
             parts = param.split(".")
             if len(parts) == 4:
+                # Handling of output streams
                 module_name, output_streams_name, stream_index, sub_param_name = parts
                 stream_index = int(stream_index)
                 output_streams = self.config[module_name][output_streams_name]
                 data = output_streams[stream_index][sub_param_name]
-                # Assign probability distribution based on data
+                # Assign probability distribution based on data type
                 if sub_param_name == "temperature":
                     if isinstance(data, list) or isinstance(data, tuple):
                         if len(data) == 1:
@@ -68,6 +76,7 @@ class MonteCarloSampler:
                     else:
                         param_distributions[param] = stats.uniform(loc=data - 100, scale=200)
             elif len(parts) == 3:
+                # Handling of input streams
                 module_name, input_stream_name, sub_param_name = parts
                 input_stream = self.config[module_name][input_stream_name]
                 if sub_param_name in input_stream:
@@ -100,6 +109,7 @@ class MonteCarloSampler:
                         else:
                             param_distributions[param] = stats.uniform(loc=data - 100, scale=200)
             elif len(parts) == 2:
+                # Handling of efficiency and electricity conversion
                 module_name, param_name = parts
                 if param_name == "efficiency":
                     data = self.config[module_name][param_name]
@@ -107,16 +117,27 @@ class MonteCarloSampler:
                 elif param_name == "electricity_conversion":
                     data = self.config[module_name][param_name]
                     param_distributions[param] = stats.uniform(loc=data*0.99, scale=data*1.01 - data*0.99)
+        
         return param_distributions  
 
     def generate_samples(self, num_samples):
+
+        ##  Generates a specified nº of samples for each param based on the assigned probability distributions
+
         samples = {}
         for param, distribution in self.param_distributions.items():
             samples[param] = [distribution.rvs() for _ in range(num_samples)]
+        
         return samples
     
     def run_simulation(self, num_samples, technique, output_file=None):
+        
+        ##  Runs the MCS with a given nº of samples and specified technique
+        ##  Logs the simulation progress and writes results to output file if specified
+
         logging.info("Starting simulation with {} samples and technique {}".format(num_samples, technique))
+        
+        self.technique = technique
         try:
             start_time = time.time()
             results = []
@@ -138,6 +159,7 @@ class MonteCarloSampler:
                 for param, value in samples.items():
                     keys = param.split(".")
                     if len(keys) == 4:
+                        # Handling for output streams
                         if keys[1] == "output_streams":
                             module_name, output_streams_name, stream_index, sub_param_name = keys
                             stream_index = int(stream_index)
@@ -148,6 +170,7 @@ class MonteCarloSampler:
                             elif sub_param_name == "pressure":
                                 self.pressure_results.append(value[i])
                     elif len(keys) == 3:
+                        # Handling for input streams
                         module_name, input_stream_name, sub_param_name = keys
                         input_stream = config_sample[module_name][input_stream_name]
                         if isinstance(input_stream, dict):
@@ -159,25 +182,29 @@ class MonteCarloSampler:
                         elif sub_param_name == "pressure":
                             self.pressure_results.append(value[i])
                     elif len(keys) == 2:
+                        # Handling for efficiency and electricity conversion
                         module_name, param_name = keys
                         config_sample[module_name][param_name] = value[i]
                         if param_name == "efficiency":
                             self.efficiency_results.append(value[i])
                         elif param_name == "electricity_conversion":
                             self.electricity_conversion_results.append(value[i])
+                
+                # Build and simulate the network for the current sample
                 network = Network(config_sample)
                 network.build_network()
                 network.simulate()
+
+                # Record total and unit emission estimates
                 subsystem_emissions, total_emissions = network.calculate_emissions()
                 results.append(subsystem_emissions)
-                
                 if subsystem_emissions is not None:
                     results.append(subsystem_emissions)
                 total_emissions_results.append(total_emissions)
                 
+                # Classify emissiones estimated based on parameter-type sampled
                 for param, value in samples.items():
                     keys = param.split(".")
-                    #print(f"Param: {param}, Keys: {keys}")
                     if len(keys) == 4:
                         if keys[1] == "output_streams":
                             module_name, output_streams_name, stream_index, sub_param_name = keys
@@ -205,11 +232,15 @@ class MonteCarloSampler:
                             elif param_name == "electricity_conversion":
                                 parameter_emissions_results[param].append(subsystem_emissions[module_name])
             
+            # Calculate parameter-type uncertainty in emission calculation based on stddev of all results
             parameter_uncertainties = {}
-
             for param, emissions in parameter_emissions_results.items():
                 parameter_uncertainties[param] = np.std(emissions)
+            
+            end_time = time.time()
+            logging.info("Simulation took {:.2f} seconds".format(end_time - start_time))
 
+            # Plot the total system emission results if available
             if total_emissions_results:
                 all_emissions = total_emissions_results
                 mean_all_emissions = np.mean(total_emissions_results)
@@ -221,21 +252,20 @@ class MonteCarloSampler:
                 ax.hist(all_emissions, bins=100, density=True, alpha=0.6, label='All Emissions')
                 ax.set_xlim(np.min(all_emissions), np.max(all_emissions))
 
-                # PDF
+                # Plot normal distribution PDF
                 x = np.linspace(np.min(all_emissions), np.max(all_emissions), 100)
                 pdf = norm.pdf(x, loc=mean_all_emissions, scale=std_all_emissions)
                 ax.plot(x, pdf, 'k', linewidth=2, label='Normal Distribution')
                 sns.kdeplot(all_emissions, fill=True, label='Kernel Density Estimate of Emissions', ax=ax)
 
-                ax.set_title('Histogram of Total Emissions with Normal Distribution')
-                ax.set_xlabel('Emissions (kg CO2)')
-                ax.set_ylabel('Probability Density')
+                # Set chart labels, title and legend
+                ax.set_title('Histogram of Total Emissions with Normal Distribution - {}'.format(technique), fontsize=16, fontweight='bold', family='Arial', pad=20)
+                ax.set_xlabel('Emissions [kg CO2/kg NH3]', fontsize=14, fontweight='bold', family='Arial')
+                ax.set_ylabel('Probability Density', fontsize=14, fontweight='bold', family='Arial')
                 ax.legend()
+                
                 plt.show()
             
-            end_time = time.time()
-            logging.info("Simulation took {:.2f} seconds".format(end_time - start_time))
-
             print("---------------")
             print(f"Technique {technique}")
             print("---------------")
@@ -244,6 +274,7 @@ class MonteCarloSampler:
             print("Standard Deviation: {:.2f}".format(std_all_emissions))
             print("---------------")
 
+            # Write results to the output file if specified
             if output_file is not None:
                 mode = 'w'
             else:
@@ -265,7 +296,11 @@ class MonteCarloSampler:
         logging.info("Simulation completed")
         
         
-    def plot_subsystems(self, results):
+    def plot_subsystems(self, technique, results):
+        
+        ##  Plots the emissions results for each subsystem
+        ##  Comprehensive simulation-result visualisation results: Includes histograms, error bars, violin plots, and CDFs 
+
         if results:
             subsystem_emissions_mean = {}
             subsystem_emissions_std = {}
@@ -275,9 +310,9 @@ class MonteCarloSampler:
                 subsystem_emissions_mean[key] = np.mean(values)
                 subsystem_emissions_std[key] = np.std(values)
 
-            # Histogram and error-bars for each subsystem
+            # Visualisation for each subsystem
             for subsystem_name in subsystem_emissions_mean.keys():
-                fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(10, 8))
+                fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(12, 10))
 
                 subsystem_emissions = [result[subsystem_name] for result in results]
 
@@ -297,9 +332,9 @@ class MonteCarloSampler:
                     axs[0,0].plot(x, pdf, 'k', linewidth=2, label='Normal Distribution')
                     sns.kdeplot(subsystem_emissions, fill=True, label='Kernel Density Estimate of Emissions', ax=axs[0,0])
 
-                    axs[0,0].set_title('Histogram of Emissions with Normal Distribution')
-                    axs[0,0].set_xlabel('Emissions (kg CO2)')
-                    axs[0,0].set_ylabel('Probability Density')
+                    axs[0,0].set_title(' Emissions Histogram - Normal Distribution', fontsize=10, fontweight='bold', family='Arial')
+                    axs[0,0].set_xlabel('Emissions (kg CO2)', fontsize=10, fontweight='bold', family='Arial')
+                    axs[0,0].set_ylabel('Probability Density', fontsize=10, fontweight='bold', family='Arial')
                     axs[0,0].legend()
 
                     # ErrorBars
@@ -310,46 +345,62 @@ class MonteCarloSampler:
                     axs[0,1].set_xlim(-0.5, 0.5)
                     axs[0,1].set_xticks([0])
                     axs[0,1].set_xticklabels([subsystem_name])
-                    axs[0,1].set_xlabel('Subsystem')
-                    axs[0,1].set_ylabel('Emissions (kg CO2)')
-                    axs[0,1].set_title('Error Bars for Subsystem Emissions')
+                    axs[0,1].set_xlabel('Subsystem', fontsize=10, fontweight='bold', family='Arial')
+                    axs[0,1].set_ylabel('Emissions (kg CO2)', fontsize=10, fontweight='bold', family='Arial')
+                    axs[0,1].set_title('Emissions Error Bars', fontsize=10, fontweight='bold', family='Arial')
                     axs[0,1].legend()
 
                     # Violin plot
                     axs[1,0].violinplot([subsystem_emissions], showmeans=True, showmedians=True)
-                    axs[1,0].set_title(f'Violin Plot - {subsystem_name}')
-                    axs[1,0].set_xlabel('Probability Density')
-                    axs[1,0].set_ylabel('Emissions (kg CO2)')
+                    axs[1,0].set_title(f'Violin Plot', fontsize=10, fontweight='bold', family='Arial')
+                    axs[1,0].set_xlabel('Probability Density', fontsize=10, fontweight='bold', family='Arial')
+                    axs[1,0].set_ylabel('Emissions (kg CO2)', fontsize=10, fontweight='bold', family='Arial')
 
                     # CDF
                     axs[1,1].plot(np.sort(subsystem_emissions), np.linspace(0, 1, len(subsystem_emissions), endpoint=False))
-                    axs[1,1].set_title(f'CPD Plot - {subsystem_name}')
-                    axs[1,1].set_xlabel('Emissions (kg CO2)')
-                    axs[1,1].set_ylabel('Cumulative Probability')
+                    axs[1,1].set_title(f'CPD Plot', fontsize=10, fontweight='bold', family='Arial')
+                    axs[1,1].set_xlabel('Emissions (kg CO2)', fontsize=10, fontweight='bold', family='Arial')
+                    axs[1,1].set_ylabel('Cumulative Probability', fontsize=10, fontweight='bold', family='Arial')
 
+                    fig.suptitle(f'{subsystem_name} Subsystem Analysis - {technique}', fontsize=14, fontweight='bold')
                     plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.2)
                     plt.tight_layout(rect=[0, 0, 1, 0.95], pad=2.5)
                     plt.show()
         else:
             print("No valid emissions results found.") 
 
-    def visualize_emission_uncertainty(self, mc_uncertainties):
-        mc_uncertainties = {k: v for k, v in mc_uncertainties.items() if not np.isnan(v)}
+    def visualize_emission_uncertainty(self, technique, uncertainties):
+       
+        ##  Visualises emission-estimate uncertainty for each parameter
+
+        uncertainties = {k: v for k, v in uncertainties.items() if not np.isnan(v)}
         subsystem_order = ['ASU', 'HydrogenProduction', 'SyngasCompression', 'HaberBoschUnit', 'CoolingSubsystem']
         parameter_type_order = ['input_stream', 'output_streams', 'efficiency', 'electricity_conversion']
-        parameter_labels = sorted(mc_uncertainties.keys(), key=lambda x: (subsystem_order.index(x.split('.')[0]), parameter_type_order.index(x.split('.')[1]) if len(x.split('.')) > 2 else float('inf')))
-        uncertainties = [mc_uncertainties[label] for label in parameter_labels]
+        parameter_labels = sorted(uncertainties.keys(), key=lambda x: (subsystem_order.index(x.split('.')[0]), parameter_type_order.index(x.split('.')[1]) if len(x.split('.')) > 2 else float('inf')))
+        uncertainties = [uncertainties[label] for label in parameter_labels]
 
-        plt.figure(figsize=(16, 10))
+        plt.figure(figsize=(12, 8))
+        
+        ##  Creates bar chart with uncertainties
+        bars = plt.barh(parameter_labels, uncertainties, color='#4682B4', edgecolor='black', height=0.6)
 
-        bars = plt.bar(parameter_labels, uncertainties, color='lightcoral')
-        plt.xlabel('Parameters')
-        plt.ylabel('Parameter Uncertainty')
-        plt.xticks(rotation=45, ha='right')
-        plt.ylim(0, max(uncertainties) * 1.5)
-        plt.tight_layout()
+        # Set chart labels, title, legend and grid
+        plt.xlabel('Uncertainty in Emissions [kg CO2/kg NH3]', fontsize=14, fontweight='bold', family='Arial')
+        plt.ylabel('Parameters', fontsize=14, fontweight='bold', family='Arial')
+        plt.title('Parameter Uncertainty - {}'.format(technique), fontsize=16, fontweight='bold', family='Arial', pad=20)
+        plt.grid(True, which='major', axis='x', linestyle='-', linewidth=0.5, color='lightgray')
+        plt.gca().invert_yaxis()  # Reverse the order for better readability
 
+        plt.xticks(fontsize=12, family='Arial')
+        plt.yticks(fontsize=12, family='Arial')
+        
+        plt.xlim(0, max(uncertainties) * 1.1)
+                
+        plt.tight_layout(pad=3)
+        
+        # Annotate bars with uncertainty values
         for bar, unc in zip(bars, uncertainties):
-            plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.000005, f'{unc:.2e}', ha='center', va='bottom', rotation=90)
+            plt.text(bar.get_width() + max(uncertainties) * 0.01, bar.get_y() + bar.get_height()/2, f'{unc:.2e}', 
+                    va='center', ha='left', fontsize=10, family='Arial')
 
         plt.show()

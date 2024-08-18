@@ -2,53 +2,74 @@ from thermostream import ThermoStream
 
 class Stream:
     def __init__(self, fluid_name=None, flow_rate=0, temperature=298, pressure=101325, mass_flow=0, enthalpy=0, internal_energy=0, entropy=0, density=0, gamma=0, phase=0, **kwargs):
+        
+        ##  Initialises an object, representing a fluid stream with various thermodynamic properties
+        ##  The constructor uses the ThermoStream class to manage the actual properties
+
         self.input_stream = ThermoStream()
         if fluid_name:
             self.input_stream.set_fluid(fluid_name)
+        
         if 'flow_rate' in kwargs:
             self.input_stream.set_massflow(kwargs['flow_rate'])
         else:
             self.input_stream.set_massflow(flow_rate)
+        
         if 'temperature' in kwargs:
+            # Kelvin
             self.input_stream.set_T(kwargs['temperature'])
         else:
             self.input_stream.set_T(temperature)
+        
         if 'pressure' in kwargs:
+            # Pascals
             self.input_stream.set_P(kwargs['pressure'])
         else:
             self.input_stream.set_P(pressure)
+        
         if 'mass_flow' in kwargs:
             self.input_stream.set_mass(kwargs['mass_flow'])
         else:
             self.input_stream.set_mass(mass_flow)
+        
         if 'enthalpy' in kwargs:
             self.input_stream.set_enthalpy(kwargs['enthalpy'])
         else:
             self.input_stream.set_enthalpy(enthalpy)
+        
         if 'internal_energy' in kwargs:
             self.input_stream.set_energy(kwargs['internal_energy'])
         else:
             self.input_stream.set_energy(internal_energy)
+        
         if 'entropy' in kwargs:
             self.input_stream.set_entropy(kwargs['entropy'])
         else:
             self.input_stream.set_entropy(entropy)
+        
         if 'density' in kwargs:
             self.input_stream.set_rho(kwargs['density'])
         else:
             self.input_stream.set_rho(density)
+        
         if 'gamma' in kwargs:
             self.input_stream.set_gamma(kwargs['gamma'])
         else:
             self.input_stream.set_gamma(gamma)
 
     def get_property(self, property_name):
+
+        ##  Retrieves a stream's specific property 
+
         if hasattr(self.input_stream, f"get_{property_name}"):
             return getattr(self.input_stream, f"get_{property_name}")()
         else:
             raise ValueError(f"Stream does not have property '{property_name}'")
 
     def get_all_properties(self):
+
+        ##  Retrieves all relevant properties of a stream in dictionary format
+
         return {
             'fluid_name': self.get_property('fluid'),
             'flow_rate': self.get_property('massflow'),
@@ -64,18 +85,30 @@ class Stream:
         }
 
     def set_property(self, property_name, value):
+        
+        ##  Sets a specific property of the stream
+
         if hasattr(self.input_stream, f"set_{property_name}"):
             getattr(self.input_stream, f"set_{property_name}")(value)
         else:
             raise ValueError(f"Stream does not have property '{property_name}'")
 
     def calculate_all_properties(self):
+
+        ##  Updates all properties of the stream based on values of pressure and temperature
+        ##  Relies on the ThermoStream class to update internal states
+
         self.input_stream.update_all_from_PT()
 
     def mix(self, other_stream):
+
+        ##  Mixes this stream with another stream
+
         self.input_stream.mix_streams(self.input_stream, other_stream.input_stream)
 
     def mix_streams(self, input_streams, output_stream_config):
+        
+        ##  Creates new stream by mixing two input streams
 
         if len(input_streams) != 2:
             raise ValueError("Mixing requires exactly two input streams.")
@@ -96,9 +129,13 @@ class Stream:
 
         output_stream = Stream(**output_stream_args)
         output_stream.calculate_all_properties()
+        
         return output_stream
     
     def split(self, fraction):
+
+        ##  Splits stream into two parts based on specified fraction
+
         if not (0 <= fraction <= 1):
             raise ValueError("Fraction must be between 0 and 1.")
 
@@ -115,16 +152,33 @@ class Stream:
         return split_stream
 
     def heat_transfer(self, heat_transfer_rate):
+        
+        ##  Performs heat transfer on the stream with a cte pressure
+        ##  ThermoStream's stream_heat_Pcons method
+        
         self.input_stream.stream_heat_Pcons(self.input_stream, heat_transfer_rate)
 
     def update_all_from_PT(self):
+        
+        ##  Updates all properties of the stream based on pressure and temperature
+        ##  ThermoStream's update_all_from_PT method
+        
         self.input_stream.update_all_from_PT()
 
     def update_all_from_PH(self):
+        ##  Updates all properties of stream based on pressure and enthalpy
+        ##  ThermoStream's update_all_from_PH method
         self.input_stream.update_all_from_PH()
 
     def update_all_from_rhoE(self):
+        
+        ##  Updates all properties of the stream based on density and internal energy
+        ##  ThermoStream's update_all_from_rhoE method
+
         self.input_stream.update_all_from_rhoE()
 
     def print_info(self):
+
+        ##  Prints the stream information 
+        ##  ThermoStream's print_info method
         self.input_stream.print_info()
