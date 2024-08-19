@@ -1,47 +1,74 @@
-
-
-
 --8<-- "README.md"
+
+# Life Cycle Analysis Software with Uncertainty Analysis
+
+Created by:
+
+**Diego Fernandez**
+
 
 ## Table of Contents
 
 - [Folder Layout](#folder-layout)
 - [Pre-requisites](#pre-requisites)
-- [Getting Started](#Running-the-code)
-- [Running the Code](#running-the-code)
-- [Code Structure](#code-structure)
-- [Documentation Editing](#documentation-editing)
+- [Software Overview](#software-overview)
+- [Software Units](#software-units)
+- [Getting Started](#getting-started)
+- [Inputs](#inputs)
+- [Outputs](#outputs)
+- [Running the Software](#running-the-software)
+- [Software Structure](#software-structure)
+- [Detailed Description of Key Files](#detailed-description-of-key-files)
 
 ## Folder layout
 
-    flexible_atrchitecture/         # main code
+    lca_uncertainty_analysis/         # main code
     docs/                           # documentation folder
 
 ## Pre-requisites
 
-1. **Python**
-Version >3.1 
+### 1. Python:
 
-## Documentation Editing
+Version: Python 3.1 or higher is required to run the software. Ensure that your environment meets this requirement before proceeding.
 
-For help editing the documentation visit [mkdocs.org](https://www.mkdocs.org). To generate the docs locally type in the parent directory: `mkdocs serve`
-and point the browser to [127.0.0.1.8000](http://127.0.0.1:8000)
+### 2. Dependencies:
 
-You will need to install the `python-markdown-math` extension for rendering equations and the `markdown-callouts` extension for correctly displaying the warning and note blocks. All requirements can be installed automatically using
+- All required Python packages and libraries are listed in the requirements.txt file. You can install them using the following command:
 
 ```bash
 $ pip install -r docs/requirements.txt
 ```
-
-You may need to install
+- For additional markdown extensions or tools, such as pip-tools, you can install them as needed with:
 
 ```bash
 $ pip install pip-tools
 ```
+## Software Overview
 
-if you add new markdown extensions, edit the `requirements.in`  file under `docs/`
+See the [Software Overview](README.md#what-does-the-code-do?) section in the `README.md`.
 
-```bash
-$ pip-compile requirements.in
-```
+## Software Units
 
+See the [Software Units](README.md#units-used-in-software) section in the `README.md`.
+
+## Getting Started
+
+See the [Getting Started](README.md#getting-the-code) section in the `README.md`.
+
+## Inputs
+See the [Getting Started](README.md#inputs) section in the `README.md`.
+
+## Outputs
+See the [Getting Started](README.md#outputs) section in the `README.md`.
+
+## Running the Software
+
+See the [Running the Code](README.md#how-to-run-the-code) section in the `README.md`.
+
+## Software Structure
+
+See the [Software Structure](README.md#code-structure) section in the `README.md`.
+
+## Detailed Description of Key Files
+
+See the [Detailed Description of Key Files](README.md#detailed-description-of-key-files) section in the `README.md`.

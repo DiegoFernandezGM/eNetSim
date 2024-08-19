@@ -1,0 +1,224 @@
+[
+    {
+        "name": "ASU.input_stream.temperature",
+        "type": "gaussian",
+        "mean": 300,
+        "stddev": 5,
+        "possibility_distribution": "math.exp(-((x - 300) ** 2) / (2 * 5 ** 2))"
+    },
+    {
+        "name": "ASU.input_stream.pressure",
+        "type": "gaussian",
+        "mean": 101325,
+        "stddev": 500,
+        "possibility_distribution": "math.exp(-((x - 101325) ** 2) / (2 * 500 ** 2))"
+    },
+    {
+        "name": "ASU.efficiency",
+        "type": "bell_shaped",
+        "a": 0.05,
+        "b": 2,
+        "c": 0.8,
+        "possibility_distribution": "1 / (1 + ((x - 0.8) / 0.05) ** (2 * 2))"
+    },
+    {
+        "name": "ASU.electricity_conversion",
+        "type": "gaussian",
+        "mean": 3600,
+        "stddev": 50,
+        "possibility_distribution": "math.exp(-((x - 3600) ** 2) / (2 * 50 ** 2))"
+    },
+    {
+        "name": "ASU.output_streams.0.temperature",
+        "type": "gaussian",
+        "mean": 77,
+        "stddev": 1,
+        "possibility_distribution": "math.exp(-((x - 77) ** 2) / (2 * 1 ** 2))"
+    },
+    {
+        "name": "ASU.output_streams.1.temperature",
+        "type": "gaussian",
+        "mean": 90,
+        "stddev": 1,
+        "possibility_distribution": "math.exp(-((x - 90) ** 2) / (2 * 1 ** 2))"
+    },
+    {
+        "name": "HydrogenProduction.input_stream.flow_rate",
+        "type": "bell_shaped",
+        "a": 1,
+        "b": 2,
+        "c": 50,
+        "possibility_distribution": "1 / (1 + ((x - 50) / 1) ** (2 * 2))"
+    },
+    {
+        "name": "HydrogenProduction.input_stream.temperature",
+        "type": "gaussian",
+        "mean": 298,
+        "stddev": 5,
+        "possibility_distribution": "math.exp(-((x - 298) ** 2) / (2 * 5 ** 2))"
+    },
+    {
+        "name": "HydrogenProduction.input_stream.pressure",
+        "type": "gaussian",
+        "mean": 101325,
+        "stddev": 500,
+        "possibility_distribution": "math.exp(-((x - 101325) ** 2) / (2 * 500 ** 2))"
+    },
+    {
+        "name": "HydrogenProduction.efficiency",
+        "type": "bell_shaped",
+        "a": 0.05,
+        "b": 2,
+        "c": 0.8,
+        "possibility_distribution": "1 / (1 + ((x - 0.8) / 0.05) ** (2 * 2))"
+    },
+    {
+        "name": "HydrogenProduction.electricity_conversion",
+        "type": "gaussian",
+        "mean": 3600,
+        "stddev": 50,
+        "possibility_distribution": "math.exp(-((x - 3600) ** 2) / (2 * 50 ** 2))"
+    },
+    {
+        "name": "HydrogenProduction.output_streams.0.temperature",
+        "type": "gaussian",
+        "mean": 77,
+        "stddev": 1,
+        "possibility_distribution": "math.exp(-((x - 77) ** 2) / (2 * 1 ** 2))"
+    },
+    {
+        "name": "HydrogenProduction.output_streams.1.temperature",
+        "type": "gaussian",
+        "mean": 90,
+        "stddev": 1,
+        "possibility_distribution": "math.exp(-((x - 90) ** 2) / (2 * 1 ** 2))"
+    },
+    {
+        "name": "SyngasCompression.efficiency",
+        "type": "bell_shaped",
+        "a": 0.1,
+        "b": 2,
+        "c": 0.8,
+        "possibility_distribution": "1 / (1 + ((x - 0.8) / 0.1) ** (2 * 2))"
+    },
+    {
+        "name": "SyngasCompression.electricity_conversion",
+        "type": "gaussian",
+        "mean": 3600,
+        "stddev": 50,
+        "possibility_distribution": "math.exp(-((x - 3600) ** 2) / (2 * 50 ** 2))"
+    },
+    {
+        "name": "SyngasCompression.output_streams.0.temperature",
+        "type": "gaussian",
+        "mean": 345,
+        "stddev": 1,
+        "possibility_distribution": "math.exp(-((x - 345) ** 2) / (2 * 1 ** 2))"
+    },
+    {
+        "name": "SyngasCompression.output_streams.0.pressure",
+        "type": "bell_shaped",
+        "a": 10000,
+        "b": 2,
+        "c": 500000,
+        "possibility_distribution": "1 / (1 + ((x - 500000) / 10000) ** (2 * 2))"
+    },
+    {
+        "name": "SyngasCompression.output_streams.1.temperature",
+        "type": "gaussian",
+        "mean": 345,
+        "stddev": 1,
+        "possibility_distribution": "math.exp(-((x - 345) ** 2) / (2 * 1 ** 2))"
+    },
+    {
+        "name": "SyngasCompression.output_streams.1.pressure",
+        "type": "bell_shaped",
+        "a": 10000,
+        "b": 2,
+        "c": 500000,
+        "possibility_distribution": "1 / (1 + ((x - 500000) / 10000) ** (2 * 2))"
+    },
+    {
+        "name": "HaberBoschUnit.efficiency",
+        "type": "bell_shaped",
+        "a": 0.1,
+        "b": 2,
+        "c": 0.65,
+        "possibility_distribution": "1 / (1 + ((x - 0.65) / 0.1) ** (2 * 2))"
+    },
+    {
+        "name": "HaberBoschUnit.electricity_conversion",
+        "type": "gaussian",
+        "mean": 3600,
+        "stddev": 50,
+        "possibility_distribution": "math.exp(-((x - 3600) ** 2) / (2 * 50 ** 2))"
+    },
+    {
+        "name": "HaberBoschUnit.output_streams.0.pressure",
+        "type": "bell_shaped",
+        "a": 100000,
+        "b": 2,
+        "c": 15000000,
+        "possibility_distribution": "1 / (1 + ((x - 15000000) / 100000) ** (2 * 2))"
+    },
+    {
+        "name": "HaberBoschUnit.output_streams.1.pressure",
+        "type": "bell_shaped",
+        "a": 100000,
+        "b": 2,
+        "c": 15000000,
+        "possibility_distribution": "1 / (1 + ((x - 15000000) / 100000) ** (2 * 2))"
+    },
+    {
+        "name": "HaberBoschUnit.output_streams.2.pressure",
+        "type": "bell_shaped",
+        "a": 100000,
+        "b": 2,
+        "c": 15000000,
+        "possibility_distribution": "1 / (1 + ((x - 15000000) / 100000) ** (2 * 2))"
+    },
+    {
+        "name": "CoolingSubsystem.efficiency",
+        "type": "bell_shaped",
+        "a": 0.05,
+        "b": 2,
+        "c": 0.6,
+        "possibility_distribution": "1 / (1 + ((x - 0.6) / 0.05) ** (2 * 2))"
+    },
+    {
+        "name": "CoolingSubsystem.electricity_conversion",
+        "type": "gaussian",
+        "mean": 3600,
+        "stddev": 50,
+        "possibility_distribution": "math.exp(-((x - 3600) ** 2) / (2 * 50 ** 2))"
+    },
+    {
+        "name": "CoolingSubsystem.output_streams.0.temperature",
+        "type": "gaussian",
+        "mean": 300,
+        "stddev": 1,
+        "possibility_distribution": "math.exp(-((x - 300) ** 2) / (2 * 1 ** 2))"
+    },
+    {
+        "name": "CoolingSubsystem.output_streams.0.pressure",
+        "type": "bell_shaped",
+        "a": 500,
+        "b": 2,
+        "c": 101325,
+        "possibility_distribution": "1 / (1 + ((x - 101325) / 500) ** (2 * 2))"
+    },
+    {
+        "name": "CoolingSubsystem.output_streams.1.temperature",
+        "type": "gaussian",
+        "mean": 300,
+        "stddev": 1,
+        "possibility_distribution": "math.exp(-((x - 300) ** 2) / (2 * 1 ** 2))"
+    },
+    {
+        "name": "CoolingSubsystem.output_streams.2.temperature",
+        "type": "gaussian",
+        "mean": 300,
+        "stddev": 1,
+        "possibility_distribution": "math.exp(-((x - 300) ** 2) / (2 * 1 ** 2))"
+    }
+]
