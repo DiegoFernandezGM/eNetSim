@@ -1,10 +1,9 @@
 
-# LCA Uncertainty code
+# Life Cycle Analysis Software with Uncertainty Analysis
 
 Created by:
 
 **Diego Fernandez**
-
 
 ## What does the code do?
 
