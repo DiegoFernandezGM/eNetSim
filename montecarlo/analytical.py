@@ -1,7 +1,7 @@
 from importer import *
 
 from network import Network 
-from distribution import DistributionAnalyzer
+from distribution import DistributionAnalyser
 
 class UncertaintyAnalysis:
     def __init__(self, config):

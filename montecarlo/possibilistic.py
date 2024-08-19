@@ -854,7 +854,7 @@ class PossibilisticUncertaintyAnalysis:
         
         return crisp_input
     
-    def normalize_params(self, param, lower, upper):
+    def normalise_params(self, param, lower, upper):
         
         ##  Normalises param value to a std range
 
@@ -864,16 +864,16 @@ class PossibilisticUncertaintyAnalysis:
             logging.warning(f"Warning: Range is zero for param: {param}, lower: {lower}, upper: {upper}. Setting range to 1 to avoid division by zero.")
             range_ = 1
         norm_param = (param - mean) / range_
-        logging.debug(f"Normalized param: {param}, lower: {lower}, upper: {upper}, normalized: {norm_param}")
+        logging.debug(f"Normalised param: {param}, lower: {lower}, upper: {upper}, normalised: {norm_param}")
         
         return norm_param, mean, range_
 
-    def denormalize_params(self, normalized_value, mean, range_):
+    def denormalise_params(self, normalised_value, mean, range_):
         
         ##  Converts normalised value back to original scale
 
-        denorm_param = normalized_value * range_ + mean
-        logging.debug(f"Denormalized value: {denorm_param} from normalized: {normalized_value}, mean: {mean}, range: {range_}")
+        denorm_param = normalised_value * range_ + mean
+        logging.debug(f"Denormalised value: {denorm_param} from normalised: {normalised_value}, mean: {mean}, range: {range_}")
         
         return denorm_param
 
@@ -936,8 +936,8 @@ class PossibilisticUncertaintyAnalysis:
                 param_name = param["name"]
                 if param_name in self.alpha_cuts:
                     param_uncertainties = [upper - lower for (lower, upper, _, _, _) in self.alpha_cuts[param_name]]
-                    normalized_uncertainties = [unc / global_max_uncertainty for unc in param_uncertainties]
-                    parameter_uncertainties[param_name] = np.mean(normalized_uncertainties)
+                    normalised_uncertainties = [unc / global_max_uncertainty for unc in param_uncertainties]
+                    parameter_uncertainties[param_name] = np.mean(normalised_uncertainties)
             
             end_time = time.time()
             logging.info("Simulation took {:.2f} seconds".format(end_time - start_time))
@@ -950,7 +950,7 @@ class PossibilisticUncertaintyAnalysis:
 
         return results
 
-    def visualize_uncertainty(self, crisp_outputs, uncertainty_propagation, parameter_uncertainties):
+    def visualise_uncertainty(self, crisp_outputs, uncertainty_propagation, parameter_uncertainties):
         
         ##  Plot results of the possibilistic analysis: parameter uncertainties and overall uncertainty propagation
 
@@ -971,7 +971,7 @@ class PossibilisticUncertaintyAnalysis:
         plt.ylabel('Parameters', fontsize=14, fontweight='bold', family='Arial')
         plt.title('Parameter Uncertainty - Possibilistic Route', fontsize=16, fontweight='bold', family='Arial', pad=20)
 
-        # Customize tick parameters and grid
+        # Customise tick parameters and grid
         plt.xticks(fontsize=12, family='Arial')
         plt.yticks(fontsize=12, family='Arial')
         plt.xlim(0, max(parameter_uncertainties.values()) * 1.1)

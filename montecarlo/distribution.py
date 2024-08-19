@@ -1,6 +1,6 @@
 from importer import *
 
-class DistributionAnalyzer:
+class DistributionAnalyser:
     def __init__(self, data):
         self.data = data
 
@@ -55,7 +55,7 @@ class DistributionAnalyzer:
         else:
             return np.random.uniform(low=min(self.data), high=max(self.data), size=1000)
         
-    def analyze_and_sample(self):
+    def analyse_and_sample(self):
 
         ##  Runs the analysis 
         ##  Returns the generated sample

@@ -198,7 +198,7 @@ class BayesianAnalysis:
         plt.tight_layout()
         plt.show()
 
-    def analyze_uncertainty(self, posterior_samples):
+    def analyse_uncertainty(self, posterior_samples):
 
         ##  Model parameters and predictions UA for each unit by calculating key statistics (mean, stddev and credible intervals)
 

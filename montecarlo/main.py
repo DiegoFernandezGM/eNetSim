@@ -53,25 +53,25 @@ def main():
     mc_sampler = MonteCarloSampler(config)
     mc_results, uncertainty_mc = mc_sampler.run_simulation(nsamples, 'MonteCarlo', output_file='MonteCarloResults.csv')
     print(uncertainty_mc)
-    mc_sampler.visualize_emission_uncertainty('MonteCarlo', uncertainty_mc)
+    mc_sampler.visualise_emission_uncertainty('MonteCarlo', uncertainty_mc)
     
     # Quasi-Monte Carlo sampling with SA (Sobol indices)
     sampler = Sampler(config)
     qmc_results, uncertainty_qmc = sampler.run_quasi_simulation(nsamples, 'Quasi-MonteCarlo', output_file='QuasiMCResults.csv', sensitivity = True) # Parameters Sensitivity: Sobol Indices
     print(uncertainty_qmc)
-    mc_sampler.visualize_emission_uncertainty('Quasi-MonteCarlo', uncertainty_qmc)
+    mc_sampler.visualise_emission_uncertainty('Quasi-MonteCarlo', uncertainty_qmc)
     
     # Latin Hypercube sampling
     lhs_results, uncertainty_lhs = sampler.run_latin_simulation(nsamples, 'Latin Hypercube', output_file='LatinHResults.csv')
     print(uncertainty_lhs)
-    mc_sampler.visualize_emission_uncertainty('Latin Hypercube', uncertainty_lhs)
+    mc_sampler.visualise_emission_uncertainty('Latin Hypercube', uncertainty_lhs)
 
     # Plot detailed unit results for each sampling technique (Histograms, error bars, violin and CDF plots)
     mc_sampler.plot_subsystems('MonteCarlo', mc_results)
     sampler.plot_subsystems('Quasi-MonteCarlo', qmc_results)
     sampler.plot_subsystems('Latin Hypercube', lhs_results)
     
-    # Organize results by subsystem
+    # Organise results by subsystem
     mc_subsystem = {subsystem: [result[subsystem] for result in mc_results] for subsystem in mc_results[0].keys()}
     qmc_subsystem = {subsystem: [result[subsystem] for result in qmc_results] for subsystem in qmc_results[0].keys()}
     lhs_subsystem = {subsystem: [result[subsystem] for result in lhs_results] for subsystem in lhs_results[0].keys()}    
@@ -92,7 +92,7 @@ def main():
     bayesian_analysis.plot_posterior_samples(posterior_samples)
     bayesian_analysis.plot_posterior_distributions(posterior_samples)
     bayesian_analysis.plot_uncertainty_intervals(posterior_samples)
-    bayesian_analysis.analyze_uncertainty(posterior_samples)
+    bayesian_analysis.analyse_uncertainty(posterior_samples)
     
     # Analytical uncertainty analysis using the first-order Taylor series approach
     uncertainty_analysis = UncertaintyAnalysis(config)
@@ -130,7 +130,7 @@ def main():
         print(f"Uncertainty Propagation: {uncertainty_propagation}")
         print(f"Parameter Uncertainties: {parameter_uncertainties}")
 
-        possibilistic_analysis.visualize_uncertainty(crisp_output, uncertainty_propagation, parameter_uncertainties)
+        possibilistic_analysis.visualise_uncertainty(crisp_output, uncertainty_propagation, parameter_uncertainties)
 
 if __name__ == "__main__":
     main()

@@ -14,7 +14,7 @@ class PEMAnalysis:
         self.stds = [np.std(values) for values in self.z_values]
         self.pdfs = [1 / len(values) for values in self.z_values]
 
-        # Initialize lists to store calculated statistics
+        # Initialise lists to store calculated statistics
         self.means = []
         self.stds = []
         self.third_moments = []

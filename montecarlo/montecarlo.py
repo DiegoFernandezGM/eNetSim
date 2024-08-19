@@ -1,12 +1,12 @@
 from importer import *
 
 from network import Network
-from distribution import DistributionAnalyzer
+from distribution import DistributionAnalyser
 
 class MonteCarloSampler:
     def __init__(self, config):
 
-        ##  Initializes Monte Carlo Sampler with the given configuration
+        ##  Initialises Monte Carlo Sampler with the given configuration
         ##  Identifies in/output params and assigns probability distributions
 
         self.config = config
@@ -45,7 +45,7 @@ class MonteCarloSampler:
 
         ##  Assigns probability distributions to the identified in/outputs
         ##  These are based on the parameter type and provided data in config
-        ##  If params are provided in ranges of possible values: DistributionAnalyzer finds best-fit distribution 
+        ##  If params are provided in ranges of possible values: DistributionAnalyser finds best-fit distribution 
 
         param_distributions = {}
         for param in self.input_params + self.output_params:
@@ -62,8 +62,8 @@ class MonteCarloSampler:
                         if len(data) == 1:
                             param_distributions[param] = stats.uniform(loc=data[0] - 10, scale=20)
                         else:
-                            handler = DistributionAnalyzer(data)
-                            param_distributions[param] = handler.analyze_and_sample()
+                            handler = DistributionAnalyser(data)
+                            param_distributions[param] = handler.analyse_and_sample()
                     else:
                         param_distributions[param] = stats.uniform(loc=data - 10, scale=20)
                 elif sub_param_name == "pressure":
@@ -71,8 +71,8 @@ class MonteCarloSampler:
                         if len(data) == 1:
                             param_distributions[param] = stats.uniform(loc=data[0] - 100, scale=200)
                         else:
-                            handler = DistributionAnalyzer(data)
-                            param_distributions[param] = handler.analyze_and_sample()
+                            handler = DistributionAnalyser(data)
+                            param_distributions[param] = handler.analyse_and_sample()
                     else:
                         param_distributions[param] = stats.uniform(loc=data - 100, scale=200)
             elif len(parts) == 3:
@@ -86,8 +86,8 @@ class MonteCarloSampler:
                             if len(data) == 1:
                                 param_distributions[param] = stats.uniform(loc=data[0]*0.9, scale=data[0]*1.1 - data[0]*0.9)
                             else:
-                                handler = DistributionAnalyzer(data)
-                                param_distributions[param] = handler.analyze_and_sample()
+                                handler = DistributionAnalyser(data)
+                                param_distributions[param] = handler.analyse_and_sample()
                         else:
                             param_distributions[param] = stats.uniform(loc=data*0.9, scale=data*1.1 - data*0.9)
                     elif sub_param_name == "temperature":
@@ -95,8 +95,8 @@ class MonteCarloSampler:
                             if len(data) == 1:
                                 param_distributions[param] = stats.uniform(loc=data[0] - 10, scale=20)
                             else:
-                                handler = DistributionAnalyzer(data)
-                                param_distributions[param] = handler.analyze_and_sample()
+                                handler = DistributionAnalyser(data)
+                                param_distributions[param] = handler.analyse_and_sample()
                         else:
                             param_distributions[param] = stats.uniform(loc=data - 10, scale=20)
                     elif sub_param_name == "pressure":
@@ -104,8 +104,8 @@ class MonteCarloSampler:
                             if len(data) == 1:
                                 param_distributions[param] = stats.uniform(loc=data[0] - 100, scale=200)
                             else:
-                                handler = DistributionAnalyzer(data)
-                                param_distributions[param] = handler.analyze_and_sample()
+                                handler = DistributionAnalyser(data)
+                                param_distributions[param] = handler.analyse_and_sample()
                         else:
                             param_distributions[param] = stats.uniform(loc=data - 100, scale=200)
             elif len(parts) == 2:
@@ -369,7 +369,7 @@ class MonteCarloSampler:
         else:
             print("No valid emissions results found.") 
 
-    def visualize_emission_uncertainty(self, technique, uncertainties):
+    def visualise_emission_uncertainty(self, technique, uncertainties):
        
         ##  Visualises emission-estimate uncertainty for each parameter
 

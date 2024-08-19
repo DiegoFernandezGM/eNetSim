@@ -1,7 +1,7 @@
 from importer import *
 
 from network import Network
-from distribution import DistributionAnalyzer
+from distribution import DistributionAnalyser
 
 class Sampler:
     def __init__(self, config):
@@ -44,7 +44,7 @@ class Sampler:
         
         ##  Assigns probability distributions to each identified param based on its characteristics (config)
         ##  Provides dictionary mapping parameters to their respective distributions
-        ##  If params are provided in ranges of possible values: DistributionAnalyzer finds best-fit distribution 
+        ##  If params are provided in ranges of possible values: DistributionAnalyser finds best-fit distribution 
 
         param_distributions = {}
         for param in self.input_params + self.output_params:
@@ -61,8 +61,8 @@ class Sampler:
                         if len(data) == 1:
                             param_distributions[param] = stats.uniform(loc=data[0] - 5, scale=20)
                         else:
-                            handler = DistributionAnalyzer(data)
-                            param_distributions[param] = handler.analyze_and_sample()
+                            handler = DistributionAnalyser(data)
+                            param_distributions[param] = handler.analyse_and_sample()
                     else:
                         param_distributions[param] = stats.uniform(loc=data - 10, scale=20)
                 elif sub_param_name == "pressure":
@@ -70,8 +70,8 @@ class Sampler:
                         if len(data) == 1:
                             param_distributions[param] = stats.uniform(loc=data[0] - 100, scale=200)
                         else:
-                            handler = DistributionAnalyzer(data)
-                            param_distributions[param] = handler.analyze_and_sample()
+                            handler = DistributionAnalyser(data)
+                            param_distributions[param] = handler.analyse_and_sample()
                     else:
                         param_distributions[param] = stats.uniform(loc=data - 100, scale=200)
             elif len(parts) == 3:
@@ -85,8 +85,8 @@ class Sampler:
                             if len(data) == 1:
                                 param_distributions[param] = stats.uniform(loc=data[0]*0.9, scale=data[0]*1.1 - data[0]*0.9)
                             else:
-                                handler = DistributionAnalyzer(data)
-                                param_distributions[param] = handler.analyze_and_sample()
+                                handler = DistributionAnalyser(data)
+                                param_distributions[param] = handler.analyse_and_sample()
                         else:
                             param_distributions[param] = stats.uniform(loc=data*0.9, scale=data*1.1 - data*0.9)
                     elif sub_param_name == "temperature":
@@ -94,8 +94,8 @@ class Sampler:
                             if len(data) == 1:
                                 param_distributions[param] = stats.uniform(loc=data[0] - 5, scale=20)
                             else:
-                                handler = DistributionAnalyzer(data)
-                                param_distributions[param] = handler.analyze_and_sample()
+                                handler = DistributionAnalyser(data)
+                                param_distributions[param] = handler.analyse_and_sample()
                         else:
                             param_distributions[param] = stats.uniform(loc=data - 10, scale=20)
                     elif sub_param_name == "pressure":
@@ -103,8 +103,8 @@ class Sampler:
                             if len(data) == 1:
                                 param_distributions[param] = stats.uniform(loc=data[0] - 100, scale=200)
                             else:
-                                handler = DistributionAnalyzer(data)
-                                param_distributions[param] = handler.analyze_and_sample()
+                                handler = DistributionAnalyser(data)
+                                param_distributions[param] = handler.analyse_and_sample()
                         else:
                             param_distributions[param] = stats.uniform(loc=data - 100, scale=200)
             elif len(parts) == 2:
