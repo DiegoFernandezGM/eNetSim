@@ -1,5 +1,5 @@
 
-# Life Cycle Analysis Software with Uncertainty Analysis
+# eNetSim: A Life Cycle Analysis Software with Uncertainty Analysis
 
 Created by:
 
