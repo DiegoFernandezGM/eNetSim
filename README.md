@@ -132,16 +132,16 @@ The software uses the following units consistently across all calculations:
 - Clone the repository using the following command (in the CLI/Terminal)
 
 ```bash
-$ git clone  git@github.com:DiegoFernandezGM/LCA_Uncertainty_Python.git
+$ git clone  git@github.com:DiegoFernandezGM/eNetSim.git 
 ```
 
 - Or use the GitHub CLI
     
 ```
-$ gh repo clone DiegoFernandezGM/LCA_Uncertainty_Python
+$ gh repo clone DiegoFernandezGM/eNetSim
 ```
 
-- Or download a version from [https://github.com/DiegoFernandezGM/LCA_Uncertainty_Python/releases/new]
+- Or download a version from [https://github.com/DiegoFernandezGM/eNetSim/releases/new]
 
 ## How to Run the Code
 To run the uncertainty analysis, follow these steps:
